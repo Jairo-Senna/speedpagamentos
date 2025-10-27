@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controlador Financeiro</title>
+    
+    <style>
+        /* --- Início do CSS --- */
+        
+        :root {
+            --cor-primaria: #e55015;
+            --cor-secundaria: #ff7b00;
+            --cor-gradiente-clara: #ffaf7b;
+            --fundo-claro: #fff9f5;
+            --borda-clara: #ffe8d6;
+            --borda-inputs: #ffcba4;
+            --texto-titulo: #d95b00;
+            --texto-corpo: #444;
+            --texto-claro: #777;
+            --fundo-branco: #fff;
+            --fundo-app: rgba(255, 255, 255, 0.8);
+            --sombra: 0 4px 10px rgba(0,0,0,0.08);
+            --cor-erro: #c0392b;
+        }
+
+        /* --- Estilos de Scroll --- */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--fundo-claro); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background-color: var(--cor-gradiente-clara); border-radius: 10px; border: 2px solid var(--fundo-claro); }
+        ::-webkit-scrollbar-thumb:hover { background-color: var(--cor-secundaria); }
+        * { scrollbar-width: thin; scrollbar-color: var(--cor-gradiente-clara) var(--fundo-claro); }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, var(--cor-primaria), var(--fundo-branco) 40%);
+            background-repeat: no-repeat;
+            color: var(--texto-corpo);
+            overflow-x: hidden;
+        }
+        
+        /* --- TELA DE LOGIN --- */
+        #login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            background: var(--fundo-branco);
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+        
+        .login-box h2 {
+            color: var(--texto-titulo);
+            border: none;
+            margin-top: 0;
+        }
+        
+        .login-box img {
+            max-width: 120px;
+            margin-bottom: 20px;
+        }
+
+        #login-form, #register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        #login-form button, #register-form button {
+            width: 100%;
+        }
+
+        #login-error {
+            color: var(--cor-erro);
+            font-size: 0.9rem;
+            min-height: 1.2em;
+        }
+        
+        .toggle-form {
+            color: var(--cor-secundaria);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+
+        /* --- ESTRUTURA DA APP --- */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            height: 100vh;
+        }
+
+        .sidebar {
+            background-color: var(--fundo-claro);
+            padding: 25px;
+            height: auto;
+            overflow-y: visible;
+            box-sizing: border-box;
+            border-right: 1px solid var(--borda-clara);
+            position: relative;
+            top: 0;
+        }
+
+        .sidebar header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--borda-clara);
+        }
+
+        #logo { max-width: 150px; height: auto; cursor: pointer; }
+        .sidebar-section { margin-bottom: 30px; }
+        .sidebar-section h3 { color: var(--texto-titulo); border-bottom: 2px solid var(--cor-gradiente-clara); padding-bottom: 8px; margin-top: 0; }
+        
+        #btn-logout {
+            background-color: var(--texto-claro);
+            margin-top: 20px;
+        }
+        #btn-logout:hover {
+            background-color: var(--cor-erro);
+        }
+
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+            height: auto;
+            box-sizing: border-box;
+            background-color: var(--fundo-app);
+            backdrop-filter: blur(10px);
+        }
+
+        #welcome-message { text-align: center; padding: 40px 20px; color: var(--texto-claro); }
+        #welcome-message h2 { color: var(--texto-titulo); border: none; }
+
+        .form-container { padding: 20px; background-color: var(--fundo-branco); border-radius: 8px; border: 1px solid var(--borda-clara); margin-bottom: 20px; }
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea, select { width: 100%; padding: 12px; border: 1px solid var(--borda-inputs); border-radius: 6px; font-size: 1rem; box-sizing: border-box; margin-bottom: 10px; }
+        button { padding: 12px 20px; background-color: var(--cor-secundaria); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background-color 0.3s; width: 100%; }
+        button:hover { background-color: var(--cor-primaria); }
+
+        .lista-vertical-utilizadores { display: flex; flex-direction: column; gap: 15px; }
+        .utilizador-card { background-color: var(--fundo-branco); padding: 15px 20px; border-radius: 8px; box-shadow: var(--sombra); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border-left: 5px solid var(--cor-gradiente-clara); }
+        .utilizador-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.12); }
+        .utilizador-card.utilizador-selecionado { border-left-color: var(--cor-primaria); box-shadow: 0 6px 15px rgba(255, 123, 0, 0.4); }
+        .utilizador-card h4 { margin: 0 0 5px 0; color: #333; }
+        .utilizador-card p { margin: 0; color: var(--texto-claro); font-size: 0.9rem; }
+
+        #area-receitas h2 { color: var(--texto-titulo); border-bottom: 2px solid var(--cor-gradiente-clara); padding-bottom: 10px; margin-top: 0; }
+        .sumario { display: flex; flex-direction: column; gap: 15px; background-image: linear-gradient(to right, var(--cor-secundaria), var(--texto-titulo)); color: white; padding: 20px; border-radius: 8px; margin: 20px 0 30px 0; text-align: center; }
+        .sumario-item h3 { margin: 0 0 10px; font-size: 1rem; color: #fff5ee; border: none; font-weight: normal; }
+        .sumario-item p { margin: 0; font-size: 1.5rem; font-weight: bold; }
+        
+        /* --- NOVO: Estilo da Navegação Mensal --- */
+        .navegacao-mes {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--fundo-claro);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .navegacao-mes h3 {
+            color: var(--texto-titulo);
+            border: none;
+            padding: 0;
+            margin: 0;
+            font-size: 1.2rem;
+            text-transform: capitalize;
+        }
+        .navegacao-mes button {
+            width: 50px;
+            font-size: 1.5rem;
+            padding: 5px;
+        }
+        .navegacao-mes button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+        /* --- FIM --- */
+        
+        .entrada { background-color: var(--fundo-branco); border: 1px solid #eee; border-left: 5px solid var(--cor-gradiente-clara); padding: 20px; margin-bottom: 15px; border-radius: 5px; position: relative; box-shadow: var(--sombra); }
+        .entrada-categoria { position: absolute; top: -1px; right: -1px; background-color: var(--texto-titulo); color: white; padding: 4px 12px; font-size: 0.8rem; font-weight: bold; border-top-right-radius: 5px; border-bottom-left-radius: 10px; }
+        .entrada-header { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; }
+        .entrada-header span:last-child { font-size: 1.1rem; color: var(--cor-secundaria); }
+        
+        .entrada-valores { display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: #555; margin-bottom: 15px; }
+        .entrada-obs { font-style: italic; color: var(--texto-claro); background-color: var(--fundo-claro); padding: 10px; border-radius: 4px; margin-bottom: 15px; word-wrap: break-word; }
+        .entrada-botoes { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .entrada-botoes button { width: 100%; font-size: 0.8rem; padding: 8px 12px; }
+
+        .modal-container {position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000;}
+        .modal {background-color: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
+        #form-pagamento { display: flex; flex-direction: column; gap: 15px; }
+        .modal-botoes { display: flex; gap: 10px; justify-content: flex-end; }
+        .modal-botoes button, #btn-cancelar-modal { width: auto; }
+        #btn-cancelar-modal { background-color: #95a5a6; }
+        #btn-cancelar-modal:hover { background-color: #7f8c8d; }
+        .btn-pago { background-color: #2ecc71; }
+        .btn-pago:hover { background-color: #27ae60; }
+        .btn-editar { background-color: #f1c40f; }
+        .btn-editar:hover { background-color: #f39c12; }
+        .btn-excluir { background-color: #e74c3c; }
+        .btn-excluir:hover { background-color: #c0392b; }
+        
+        .escondido { display: none; }
+        
+        /* Media Query para Desktops */
+        @media (min-width: 769px) {
+            body { overflow: hidden; }
+            .app-layout { grid-template-columns: 320px 1fr; }
+            .sidebar { height: 100vh; overflow-y: auto; position: sticky; }
+            .main-content { padding: 40px; overflow-y: auto; height: 100vh; }
+            #welcome-message { padding: 100px 20px; }
+            .sumario { flex-direction: row; gap: 0; }
+            .navegacao-mes { padding: 20px 30px; }
+            .navegacao-mes h3 { font-size: 1.5rem; }
+            .entrada-header { flex-direction: row; justify-content: space-between; align-items: center; }
+            .entrada-header span:last-child { font-size: 1.2rem; }
+            .entrada-valores { flex-direction: row; gap: 20px; }
+            .entrada-botoes { flex-direction: row; gap: 10px; }
+            .entrada-botoes button { width: auto; }
+        }
+        
+        /* --- Fim do CSS --- */
+    </style>
+</head>
+<body>
+
+    <!-- TELA DE LOGIN (Inicia visível) -->
+    <div id="login-screen">
+        <div class="login-box">
+            <img src="imagens/speedlogo.png" alt="Logótipo" onerror="this.alt='Logótipo'; this.style.color='var(--texto-claro)'; this.style.border='1px solid var(--borda-clara)'; this.style.padding='10px';">
+            
+            <form id="login-form">
+                <h2>Entrar</h2>
+                <input type="email" id="login-email" placeholder="Email" required>
+                <input type="password" id="login-password" placeholder="Senha" required>
+                <p id="login-error"></p>
+                <button type="submit">Login</button>
+                <div class="toggle-form" id="show-register">Não tem conta? Crie uma agora</div>
+            </form>
+            
+            <form id="register-form" class="escondido">
+                <h2>Criar Conta</h2>
+                <input type="email" id="register-email" placeholder="Email" required>
+                <input type="password" id="register-password" placeholder="Senha (mínimo 6 caracteres)" required>
+                <p id="register-error"></p>
+                <button type="submit">Registar</button>
+                <div class="toggle-form" id="show-login">Já tem conta? Entrar</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- APLICAÇÃO PRINCIPAL (Inicia escondida) -->
+    <div id="app-screen" class="app-layout escondido">
+        
+        <aside class="sidebar">
+            <header>
+                <img src="imagens/speedlogo.png" alt="Logótipo da Empresa" id="logo" onerror="this.alt='Logótipo'; this.style.color='var(--texto-claro)';">
+            </header>
+            
+            <div class="sidebar-section">
+                <form id="form-novo-utilizador" class="form-container">
+                    <h3>Adicionar Utilizador</h3>
+                    <input type="text" id="nome-utilizador" placeholder="Nome completo" required>
+                    <input type="text" id="setor-utilizador" placeholder="Setor" required>
+                    <button type="submit">Adicionar</button>
+                </form>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Utilizadores</h3>
+                <div id="lista-utilizadores" class="lista-vertical-utilizadores"></div>
+            </div>
+            
+            <button id="btn-logout">Sair</button>
+        </aside>
+
+        <main class="main-content">
+            <div id="welcome-message">
+                <h2>Bem-vindo!</h2>
+                <p>Selecione um utilizador à esquerda para ver os detalhes ou adicione um novo.</p>
+            </div>
+
+            <div id="area-receitas" class="escondido">
+                <h2 id="titulo-receitas-utilizador"></h2>
+                
+                <!-- NOVO: Navegação Mensal -->
+                <div class="navegacao-mes">
+                    <button id="btn-mes-anterior">&lt;</button>
+                    <h3 id="mes-ano-atual">...</h3>
+                    <button id="btn-mes-proximo">&gt;</button>
+                </div>
+
+                <div class="sumario">
+                    <div class="sumario-item"><h3>Total a Receber</h3><p id="total-a-receber">R$ 0.00</p></div>
+                    <div class="sumario-item"><h3>Total Já Recebido</h3><p id="total-recebido">R$ 0.00</p></div>
+                    <div class="sumario-item"><h3>Saldo Restante</h3><p id="saldo-restante">R$ 0.00</p></div>
+                </div>
+
+                <div class="form-container">
+                    <!-- ATUALIZADO: O título muda com o mês -->
+                    <h3 id="form-titulo-receita">Adicionar Nova Receita</h3>
+                    <form id="form-nova-entrada">
+                        <input type="text" id="titulo-entrada" placeholder="Título da receita" required>
+                        <input type="text" id="categoria-entrada" placeholder="Categoria (ex: Salário)" required>
+                        <input type="number" id="valor-entrada" placeholder="Valor total (R$)" step="0.01" required>
+                        <textarea id="obs-entrada" placeholder="Observações (opcional)"></textarea>
+                        <button type="submit">Adicionar Receita</button>
+                    </form>
+                </div>
+
+                <h3>Receitas Registadas</h3>
+                <div id="lista-entradas"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Pagamento -->
+    <div id="modal-pagamento" class="modal-container escondido">
+        <div class="modal">
+            <h3>Adicionar Pagamento Recebido</h3>
+            <form id="form-pagamento">
+                <p>Adicionar pagamento para: <strong id="titulo-modal"></strong></p>
+                <input type="hidden" id="id-entrada-pagamento">
+                <input type="number" id="valor-pagamento" placeholder="Valor recebido (R$)" step="0.01" required>
+                <div class="modal-botoes">
+                    <button type="submit">Confirmar</button>
+                    <button type="button" id="btn-cancelar-modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts Firebase -->
+    <script type="module">
+        // Importa os módulos necessários do Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            signOut,
+            setPersistence,
+            browserLocalPersistence
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            collection, 
+            addDoc, 
+            updateDoc, 
+            deleteDoc, 
+            onSnapshot, 
+            query,
+            setLogLevel
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // --- INICIALIZAÇÃO FIREBASE ---
+        
+        // <<< O SEU firebaseConfig FOI INSERIDO AQUI >>>
+        const firebaseConfig = {
+          apiKey: "AIzaSyAJH2S6l3UkeaJx3mDwNdWLwQau7az8R40",
+          authDomain: "controle-paloma.firebaseapp.com",
+          projectId: "controle-paloma",
+          storageBucket: "controle-paloma.firebasestorage.app",
+          messagingSenderId: "410740668297",
+          appId: "1:410740668297:web:31a58c31fa254bcf7e9358",
+          measurementId: "G-GN3KDTH1BX"
+        };
+        // <<< FIM DA ÁREA DE CONFIGURAÇÃO >>>
+
+        let app, auth, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            setLogLevel('debug');
+            await setPersistence(auth, browserLocalPersistence);
+        } catch (error) {
+            console.error("Erro ao inicializar o Firebase. Verifique o seu objeto 'firebaseConfig'.", error);
+            alert("Erro crítico ao ligar à base de dados. Verifique a consola.");
+        }
+
+        // --- ESTADO GLOBAL DA APLICAÇÃO ---
+        let currentUserId = null;
+        let utilizadorSelecionadoId = null;
+        let dataVisaoAtual = new Date(); // NOVO: Controla o mês/ano
+        
+        let localUtilizadoresCache = [];
+        let localEntradasCache = [];
+
+        let unsubUtilizadores = () => {};
+        let unsubEntradas = () => {};
+
+        // --- SELETORES DO DOM ---
+        const loginScreen = document.getElementById('login-screen');
+        const appScreen = document.getElementById('app-screen');
+        const logo = document.getElementById('logo');
+        const formNovoUtilizador = document.getElementById('form-novo-utilizador');
+        const listaUtilizadoresDiv = document.getElementById('lista-utilizadores');
+        const areaReceitasDiv = document.getElementById('area-receitas');
+        const welcomeMessage = document.getElementById('welcome-message');
+        const formNovaEntrada = document.getElementById('form-nova-entrada');
+        const listaEntradasDiv = document.getElementById('lista-entradas');
+        const modalPagamento = document.getElementById('modal-pagamento');
+        const btnLogout = document.getElementById('btn-logout');
+        const inputNomeUtilizador = document.getElementById('nome-utilizador');
+        const inputSetorUtilizador = document.getElementById('setor-utilizador');
+        const tituloReceitasUtilizador = document.getElementById('titulo-receitas-utilizador');
+        const inputTituloEntrada = document.getElementById('titulo-entrada');
+        const inputCategoriaEntrada = document.getElementById('categoria-entrada');
+        const inputValorEntrada = document.getElementById('valor-entrada');
+        const inputObsEntrada = document.getElementById('obs-entrada');
+        
+        // NOVO: Seletores da Navegação Mensal
+        const btnMesAnterior = document.getElementById('btn-mes-anterior');
+        const btnMesProximo = document.getElementById('btn-mes-proximo');
+        const mesAnoAtualEl = document.getElementById('mes-ano-atual');
+        const formTituloReceita = document.getElementById('form-titulo-receita');
+
+        // REMOVIDO: Filtros antigos
+        // const filtroMes = ...
+        
+        const totalAReceberEl = document.getElementById('total-a-receber');
+        const totalRecebidoEl = document.getElementById('total-recebido');
+        const saldoRestanteEl = document.getElementById('saldo-restante');
+        const formPagamento = document.getElementById('form-pagamento');
+        const btnCancelarModal = document.getElementById('btn-cancelar-modal');
+        const idEntradaPagamentoInput = document.getElementById('id-entrada-pagamento');
+        const valorPagamentoInput = document.getElementById('valor-pagamento');
+        const tituloModalEl = document.getElementById('titulo-modal');
+
+        // --- FUNÇÕES DE FORMATAÇÃO E AJUDA ---
+        const formatarMoeda = (valor) => {
+            const numValor = Number(valor);
+            return isNaN(numValor) ? "R$ 0,00" : numValor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        };
+        const mostrarErroLogin = (msg) => {
+            document.getElementById('login-error').textContent = msg;
+            document.getElementById('register-error').textContent = msg;
+        };
+
+        // --- LÓGICA DE AUTENTICAÇÃO ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                loginScreen.classList.add('escondido');
+                appScreen.classList.remove('escondido');
+                setupAppListeners();
+            } else {
+                currentUserId = null;
+                loginScreen.classList.remove('escondido');
+                appScreen.classList.add('escondido');
+                unsubUtilizadores();
+                unsubEntradas();
+                localUtilizadoresCache = [];
+                localEntradasCache = [];
+                utilizadorSelecionadoId = null;
+                renderizarUtilizadores();
+                showWelcomeScreen();
+            }
+        });
+        
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+            mostrarErroLogin("");
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (error) { mostrarErroLogin("Email ou senha inválidos."); }
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const pass = document.getElementById('register-password').value;
+            mostrarErroLogin("");
+            try {
+                await createUserWithEmailAndPassword(auth, email, pass);
+            } catch (error) {
+                if (error.code === 'auth/weak-password') mostrarErroLogin("A senha deve ter pelo menos 6 caracteres.");
+                else if (error.code === 'auth/email-already-in-use') mostrarErroLogin("Este email já está em uso.");
+                else mostrarErroLogin("Erro ao criar conta.");
+            }
+        });
+
+        document.getElementById('show-register').addEventListener('click', () => {
+            document.getElementById('login-form').classList.add('escondido');
+            document.getElementById('register-form').classList.remove('escondido');
+        });
+        document.getElementById('show-login').addEventListener('click', () => {
+            document.getElementById('register-form').classList.add('escondido');
+            document.getElementById('login-form').classList.remove('escondido');
+        });
+        
+        // --- LÓGICA PRINCIPAL DA APLICAÇÃO (Após Login) ---
+        
+        function setupAppListeners() {
+            const utilizadoresCollectionPath = `/gestao-financeira/${currentUserId}/gestao_utilizadores`;
+            const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
+
+            unsubUtilizadores = onSnapshot(query(collection(db, utilizadoresCollectionPath)), (snapshot) => {
+                localUtilizadoresCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderizarUtilizadores();
+            }, (error) => console.error("Erro ao ouvir utilizadores:", error));
+            
+            unsubEntradas = onSnapshot(query(collection(db, entradasCollectionPath)), (snapshot) => {
+                localEntradasCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (utilizadorSelecionadoId) renderizarAreaReceitas(utilizadorSelecionadoId);
+            }, (error) => console.error("Erro ao ouvir receitas:", error));
+            
+            btnLogout.onclick = async () => { await signOut(auth); };
+            logo.onclick = showWelcomeScreen;
+            formNovoUtilizador.onsubmit = adicionarUtilizador;
+            formNovaEntrada.onsubmit = adicionarNovaEntrada;
+            listaEntradasDiv.onclick = handleEntradaClick;
+            formPagamento.onsubmit = processarPagamento;
+            btnCancelarModal.onclick = () => modalPagamento.classList.add('escondido');
+            
+            // NOVO: Listeners da Navegação Mensal
+            btnMesAnterior.onclick = () => mudarMes(-1);
+            btnMesProximo.onclick = () => mudarMes(1);
+            
+            renderizarUtilizadores();
+            showWelcomeScreen();
+        }
+
+        // --- FUNÇÕES DE DADOS (Firestore) ---
+
+        async function adicionarUtilizador(event) {
+            event.preventDefault();
+            const nome = inputNomeUtilizador.value.trim();
+            const setor = inputSetorUtilizador.value.trim();
+            if (!nome || !setor) return alert('Por favor, preencha o nome e o setor.');
+            try {
+                const utilizadoresCollectionPath = `/gestao-financeira/${currentUserId}/gestao_utilizadores`;
+                await addDoc(collection(db, utilizadoresCollectionPath), { nome, setor });
+                formNovoUtilizador.reset();
+            } catch (error) { console.error("Erro ao adicionar utilizador:", error); }
+        }
+
+        async function adicionarNovaEntrada(event) {
+            event.preventDefault();
+            if (!utilizadorSelecionadoId) return alert("Erro: Nenhum utilizador selecionado.");
+            const titulo = inputTituloEntrada.value.trim();
+            const categoria = inputCategoriaEntrada.value.trim();
+            const valor = parseFloat(inputValorEntrada.value.replace(',', '.'));
+            const obs = inputObsEntrada.value.trim();
+            
+            if (!titulo || !categoria || isNaN(valor) || valor <= 0) return alert('Por favor, preencha título, categoria e um valor válido.');
+            
+            // ATUALIZADO: Salva a receita com base no mês de visualização
+            // Usamos o dia 2 do mês para evitar bugs de fuso horário
+            const dataDaReceita = new Date(dataVisaoAtual.getFullYear(), dataVisaoAtual.getMonth(), 2).toISOString();
+            
+            const novaEntrada = {
+                titulo, categoria, valorTotal: valor, valorRecebido: 0, observacoes: obs,
+                dataCriacao: dataDaReceita,
+                utilizadorId: utilizadorSelecionadoId
+            };
+            
+            try {
+                const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
+                await addDoc(collection(db, entradasCollectionPath), novaEntrada);
+                formNovaEntrada.reset();
+            } catch (error) { console.error("Erro ao adicionar receita:", error); }
+        }
+
+        async function handleEntradaClick(event) {
+            const target = event.target;
+            const entradaDiv = target.closest('.entrada');
+            if (!entradaDiv) return;
+            const id = entradaDiv.dataset.id;
+            if (!id) return;
+            
+            const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
+            const docRef = doc(db, entradasCollectionPath, id);
+
+            if (target.classList.contains('btn-excluir')) {
+                if (confirm('Tem a certeza de que deseja excluir esta receita?')) {
+                    try { await deleteDoc(docRef); } catch (error) { console.error("Erro ao excluir:", error); }
+                }
+            } else if (target.classList.contains('btn-pago')) {
+                const entrada = localEntradasCache.find(e => e.id === id);
+                if (entrada) {
+                    tituloModalEl.textContent = entrada.titulo;
+                    idEntradaPagamentoInput.value = id;
+                    modalPagamento.classList.remove('escondido');
+                    valorPagamentoInput.focus();
+                }
+            } else if (target.classList.contains('btn-editar')) {
+                alert('Funcionalidade de Edição a ser implementada!');
+            }
+        }
+        
+        async function processarPagamento(event) {
+            event.preventDefault();
+            const id = idEntradaPagamentoInput.value;
+            const valorAdicional = parseFloat(valorPagamentoInput.value.replace(',', '.'));
+            
+            if (!id || isNaN(valorAdicional) || valorAdicional <= 0) return alert('Por favor, insira um valor de pagamento válido.');
+            
+            const entrada = localEntradasCache.find(e => e.id === id);
+            if (!entrada) return alert("Ocorreu um erro ao processar o pagamento.");
+
+            const valorRecebidoNum = Number(entrada.valorRecebido);
+            const valorTotalNum = Number(entrada.valorTotal);
+            const novoValorRecebido = valorRecebidoNum + valorAdicional;
+            
+            if (novoValorRecebido > (valorTotalNum + 0.001)) return alert('O valor recebido não pode ultrapassar o valor total da receita.');
+            
+            try {
+                const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
+                const docRef = doc(db, entradasCollectionPath, id);
+                await updateDoc(docRef, { valorRecebido: novoValorRecebido });
+                modalPagamento.classList.add('escondido');
+                formPagamento.reset();
+            } catch (error) { console.error("Erro ao atualizar pagamento:", error); }
+        }
+
+        // --- FUNÇÕES DE RENDERIZAÇÃO (Leem do cache local) ---
+
+        function renderizarUtilizadores() {
+            listaUtilizadoresDiv.innerHTML = '';
+            if (localUtilizadoresCache.length === 0) {
+                listaUtilizadoresDiv.innerHTML = '<p>Nenhum utilizador registado.</p>';
+                return;
+            }
+            localUtilizadoresCache.forEach(user => {
+                const card = document.createElement('div');
+                card.className = 'utilizador-card';
+                card.dataset.id = user.id;
+                card.innerHTML = `<h4>${user.nome}</h4><p>${user.setor}</p>`;
+                if (user.id === utilizadorSelecionadoId) card.classList.add('utilizador-selecionado');
+                card.addEventListener('click', () => selecionarUtilizador(user.id));
+                listaUtilizadoresDiv.appendChild(card);
+            });
+        }
+        
+        function selecionarUtilizador(id) {
+            const utilizador = localUtilizadoresCache.find(u => u.id === id);
+            if (!utilizador) return;
+            utilizadorSelecionadoId = id;
+            
+            // NOVO: Reseta a data para o mês atual ao selecionar utilizador
+            dataVisaoAtual = new Date(); 
+            
+            welcomeMessage.classList.add('escondido');
+            areaReceitasDiv.classList.remove('escondido');
+            tituloReceitasUtilizador.textContent = `Receitas de ${utilizador.nome}`;
+            renderizarUtilizadores(); 
+            renderizarNavegacaoMes(); // NOVO
+            renderizarAreaReceitas(id);
+        }
+        
+        function showWelcomeScreen() {
+            utilizadorSelecionadoId = null;
+            welcomeMessage.classList.remove('escondido');
+            areaReceitasDiv.classList.add('escondido');
+            renderizarUtilizadores(); 
+        }
+
+        // NOVO: Controla a navegação de mês
+        function mudarMes(direcao) {
+            dataVisaoAtual.setMonth(dataVisaoAtual.getMonth() + direcao);
+            renderizarNavegacaoMes();
+            renderizarAreaReceitas(utilizadorSelecionadoId);
+        }
+
+        // NOVO: Formata o texto do mês/ano
+        function formatarDataVisao(data) {
+             return data.toLocaleDateString('pt-BR', {
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+        
+        // NOVO: Renderiza o cabeçalho de navegação do mês
+        function renderizarNavegacaoMes() {
+            const textoMesAno = formatarDataVisao(dataVisaoAtual);
+            mesAnoAtualEl.textContent = textoMesAno;
+            formTituloReceita.textContent = `Adicionar Receita para ${textoMesAno}`;
+            
+            // Desativa o botão "próximo" se estivermos no mês atual ou futuro
+            const agora = new Date();
+            agora.setDate(1); // Normaliza para o dia 1
+            dataVisaoAtual.setDate(1); // Normaliza para o dia 1
+            
+            if (dataVisaoAtual >= agora) {
+                btnMesProximo.disabled = true;
+            } else {
+                btnMesProximo.disabled = false;
+            }
+        }
+        
+        // ATUALIZADO: Filtra pelo mês/ano da dataVisaoAtual
+        function renderizarAreaReceitas(userId) {
+            // Define o mês e ano com base na data de visão
+            const mesSelecionado = dataVisaoAtual.getMonth() + 1;
+            const anoSelecionado = dataVisaoAtual.getFullYear();
+            
+            let entradasDoUtilizador = localEntradasCache.filter(e => e.utilizadorId === userId);
+            
+            let entradasFiltradas = entradasDoUtilizador.filter(e => {
+                try {
+                    const data = new Date(e.dataCriacao);
+                    if (isNaN(data.getTime())) return false;
+                    const mesEntrada = data.getMonth() + 1;
+                    const anoEntrada = data.getFullYear();
+                    // Compara com o mês/ano selecionado
+                    return mesEntrada === mesSelecionado && anoEntrada === anoSelecionado;
+                } catch (error) { return false; }
+            });
+            atualizarSumario(entradasFiltradas);
+            renderizarListaEntradas(entradasFiltradas);
+        }
+
+        // REMOVIDO: popularFiltros()
+        
+        function renderizarListaEntradas(lista) {
+            listaEntradasDiv.innerHTML = '';
+            if (lista.length === 0) {
+                listaEntradasDiv.innerHTML = '<p>Nenhuma receita encontrada para este mês.</p>';
+                return;
+            }
+            lista.sort((a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao));
+            lista.forEach(entrada => {
+                const entradaDiv = document.createElement('div');
+                entradaDiv.classList.add('entrada');
+                entradaDiv.dataset.id = entrada.id;
+                const valorRestante = Number(entrada.valorTotal) - Number(entrada.valorRecebido);
+                entradaDiv.innerHTML = `
+                    <div class="entrada-categoria">${entrada.categoria}</div>
+                    <div class="entrada-header">
+                        <span>${entrada.titulo}</span>
+                        <span>${formatarMoeda(entrada.valorTotal)}</span>
+                    </div>
+                    <div class="entrada-valores">
+                        <span><strong>Recebido:</strong> ${formatarMoeda(entrada.valorRecebido)}</span>
+                        <span><strong>Restante:</strong> ${formatarMoeda(valorRestante)}</span>
+                    </div>
+                    ${entrada.observacoes ? `<div class="entrada-obs"><strong>Obs:</strong> ${entrada.observacoes}</div>` : ''}
+                    <div class="entrada-botoes">
+                        <button class="btn-pago">Adicionar Pagamento</button>
+                        <button class="btn-editar">Editar</button>
+                        <button class="btn-excluir">Excluir</button>
+                    </div>
+                `;
+                listaEntradasDiv.appendChild(entradaDiv);
+            });
+        }
+
+    </script>
+</body>
+</html>
