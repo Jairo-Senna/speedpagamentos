@@ -356,34 +356,34 @@
             signInWithEmailAndPassword, 
             signOut,
             setPersistence,
-            browserLocalPersistence
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { 
-            getFirestore, 
-            doc, 
-            collection, 
-            addDoc, 
-            updateDoc, 
-            deleteDoc, 
-            onSnapshot, 
-            query,
-            setLogLevel
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-        // --- INICIALIZAÇÃO FIREBASE ---
-        
-        // <<< O SEU firebaseConfig FOI INSERIDO AQUI >>>
-        const firebaseConfig = {
-          apiKey: "AIzaSyAJH2S6l3UkeaJx3mDwNdWLwQau7az8R40",
-          authDomain: "controle-paloma.firebaseapp.com",
-          projectId: "controle-paloma",
-          storageBucket: "controle-paloma.firebasestorage.app",
-          messagingSenderId: "410740668297",
-          appId: "1:410740668297:web:31a58c31fa254bcf7e9358",
-          measurementId: "G-GN3KDTH1BX"
+            measurementId: "G-GN3KDTH1BX"
         };
         // <<< FIM DA ÁREA DE CONFIGURAÇÃO >>>
 
+        // --- SELETORES DO DOM (APENAS LOGIN) ---
+        // Movidos para o topo para garantir que os listeners sejam anexados
+        const loginScreen = document.getElementById('login-screen');
+        const appScreen = document.getElementById('app-screen');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const showRegisterBtn = document.getElementById('show-register');
+        const showLoginBtn = document.getElementById('show-login');
+        const loginErrorEl = document.getElementById('login-error');
+        const registerErrorEl = document.getElementById('register-error');
+
+        // --- ANEXAR LISTENERS DE LOGIN IMEDIATAMENTE ---
+        loginForm.addEventListener('submit', handleLogin);
+        registerForm.addEventListener('submit', handleRegister);
+        showRegisterBtn.addEventListener('click', () => {
+            loginForm.classList.add('escondido');
+            registerForm.classList.remove('escondido');
+        });
+        showLoginBtn.addEventListener('click', () => {
+            registerForm.classList.add('escondido');
+            loginForm.classList.remove('escondido');
+        });
+        
+        // --- INICIALIZAÇÃO FIREBASE ---
         let app, auth, db;
         try {
             app = initializeApp(firebaseConfig);
@@ -451,8 +451,9 @@
             return isNaN(numValor) ? "R$ 0,00" : numValor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         };
         const mostrarErroLogin = (msg) => {
-            document.getElementById('login-error').textContent = msg;
-            document.getElementById('register-error').textContent = msg;
+            // IDs de erro agora são únicos
+            loginErrorEl.textContent = msg;
+            registerErrorEl.textContent = msg;
         };
 
         // --- LÓGICA DE AUTENTICAÇÃO ---
@@ -476,38 +477,44 @@
             }
         });
         
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
+        // As funções de handle agora estão separadas
+        async function handleLogin(e) {
             e.preventDefault();
+            console.log("Tentativa de login..."); // Para depuração
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-password').value;
             mostrarErroLogin("");
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
-            } catch (error) { mostrarErroLogin("Email ou senha inválidos."); }
-        });
+                console.log("Login bem-sucedido!");
+            } catch (error) { 
+                console.error("Falha no login:", error.code);
+                mostrarErroLogin("Email ou senha inválidos."); 
+            }
+        }
 
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
+        async function handleRegister(e) {
             e.preventDefault();
+            console.log("Tentativa de registo..."); // Para depuração
             const email = document.getElementById('register-email').value;
             const pass = document.getElementById('register-password').value;
             mostrarErroLogin("");
             try {
                 await createUserWithEmailAndPassword(auth, email, pass);
+                console.log("Registo bem-sucedido!");
             } catch (error) {
+                console.error("Falha no registo:", error.code);
                 if (error.code === 'auth/weak-password') mostrarErroLogin("A senha deve ter pelo menos 6 caracteres.");
                 else if (error.code === 'auth/email-already-in-use') mostrarErroLogin("Este email já está em uso.");
                 else mostrarErroLogin("Erro ao criar conta.");
             }
-        });
+        }
 
-        document.getElementById('show-register').addEventListener('click', () => {
-            document.getElementById('login-form').classList.add('escondido');
-            document.getElementById('register-form').classList.remove('escondido');
-        });
-        document.getElementById('show-login').addEventListener('click', () => {
-            document.getElementById('register-form').classList.add('escondido');
-            document.getElementById('login-form').classList.remove('escondido');
-        });
+        // REMOVIDO: Event listeners que estavam aqui
+        // document.getElementById('login-form').addEventListener(...)
+        // document.getElementById('register-form').addEventListener(...)
+        // document.getElementById('show-register').addEventListener(...)
+        // document.getElementById('show-login').addEventListener(...)
         
         // --- LÓGICA PRINCIPAL DA APLICAÇÃO (Após Login) ---
         
@@ -769,3 +776,6 @@
     </script>
 </body>
 </html>
+
+
+
