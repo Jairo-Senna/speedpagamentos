@@ -78,7 +78,7 @@
             gap: 15px;
         }
 
-        /* --- NOVO: Esconder o form de registo por defeito via CSS --- */
+        /* --- Esconder o form de registo por defeito via CSS --- */
         #register-form.escondido {
             display: none;
         }
@@ -239,8 +239,8 @@
             
             <form id="login-form"> <!-- Form de login visível por defeito -->
                 <h2>Entrar</h2>
-                <input type="email" id="login-email" placeholder="Email" required>
-                <input type="password" id="login-password" placeholder="Senha" required>
+                <input type="email" id="login-email" placeholder="Email">
+                <input type="password" id="login-password" placeholder="Senha">
                 <p id="login-error"></p>
                 <button type="submit">Login</button>
                 <div class="toggle-form" id="show-register">Não tem conta? Crie uma agora</div>
@@ -248,8 +248,8 @@
             
             <form id="register-form" class="escondido"> <!-- Form de registo escondido por defeito -->
                 <h2>Criar Conta</h2>
-                <input type="email" id="register-email" placeholder="Email" required>
-                <input type="password" id="register-password" placeholder="Senha (mínimo 6 caracteres)" required>
+                <input type="email" id="register-email" placeholder="Email">
+                <input type="password" id="register-password" placeholder="Senha (mínimo 6 caracteres)">
                 <p id="register-error"></p>
                 <button type="submit">Registar</button>
                 <div class="toggle-form" id="show-login">Já tem conta? Entrar</div>
@@ -268,8 +268,8 @@
             <div class="sidebar-section">
                 <form id="form-novo-utilizador" class="form-container">
                     <h3>Adicionar Utilizador</h3>
-                    <input type="text" id="nome-utilizador" placeholder="Nome completo" required>
-                    <input type="text" id="setor-utilizador" placeholder="Setor" required>
+                    <input type="text" id="nome-utilizador" placeholder="Nome completo">
+                    <input type="text" id="setor-utilizador" placeholder="Setor">
                     <button type="submit">Adicionar</button>
                 </form>
             </div>
@@ -306,9 +306,9 @@
                 <div class="form-container">
                     <h3 id="form-titulo-receita">Adicionar Nova Receita</h3>
                     <form id="form-nova-entrada">
-                        <input type="text" id="titulo-entrada" placeholder="Título da receita" required>
-                        <input type="text" id="categoria-entrada" placeholder="Categoria (ex: Salário)" required>
-                        <input type="number" id="valor-entrada" placeholder="Valor total (R$)" step="0.01" required>
+                        <input type="text" id="titulo-entrada" placeholder="Título da receita">
+                        <input type="text" id="categoria-entrada" placeholder="Categoria (ex: Salário)">
+                        <input type="number" id="valor-entrada" placeholder="Valor total (R$)" step="0.01">
                         <textarea id="obs-entrada" placeholder="Observações (opcional)"></textarea>
                         <button type="submit">Adicionar Receita</button>
                     </form>
@@ -327,7 +327,7 @@
             <form id="form-pagamento">
                 <p>Adicionar pagamento para: <strong id="titulo-modal"></strong></p>
                 <input type="hidden" id="id-entrada-pagamento">
-                <input type="number" id="valor-pagamento" placeholder="Valor recebido (R$)" step="0.01" required>
+                <input type="number" id="valor-pagamento" placeholder="Valor recebido (R$)" step="0.01"> <!-- required removido -->
                 <div class="modal-botoes">
                     <button type="submit">Confirmar</button>
                     <button type="button" id="btn-cancelar-modal">Cancelar</button>
@@ -377,7 +377,6 @@
 
         let appInitialized = false;
         
-        // --- USAR DOMContentLoaded em vez de window.onload ---
         document.addEventListener('DOMContentLoaded', async () => {
              console.log("DOMContentLoaded disparado.");
 
@@ -408,7 +407,7 @@
                 return;
             }
 
-             // --- ANEXAR LISTENERS DE LOGIN (MOVIDO PARA DEPOIS DO FIREBASE INIT) ---
+             // --- ANEXAR LISTENERS DE LOGIN ---
             try {
                 loginForm.addEventListener('submit', handleLogin);
                 registerForm.addEventListener('submit', handleRegister);
@@ -436,7 +435,6 @@
             let unsubEntradas = () => {};
 
             // --- SELETORES DO DOM (APP PRINCIPAL) ---
-            // (Verificar se existem para evitar erros caso o login falhe)
             const logo = document.getElementById('logo');
             const formNovoUtilizador = document.getElementById('form-novo-utilizador');
             const listaUtilizadoresDiv = document.getElementById('lista-utilizadores');
@@ -472,8 +470,8 @@
                 return isNaN(numValor) ? "R$ 0,00" : numValor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             };
             const mostrarErroLogin = (msg) => {
-                loginErrorEl.textContent = msg;
-                registerErrorEl.textContent = msg;
+                 if (loginErrorEl) loginErrorEl.textContent = msg;
+                 if (registerErrorEl) registerErrorEl.textContent = msg;
             };
 
             // --- LÓGICA DE AUTENTICAÇÃO (COM GUARDA) ---
@@ -511,6 +509,8 @@
                 const email = document.getElementById('login-email').value;
                 const pass = document.getElementById('login-password').value;
                 mostrarErroLogin("");
+                 // Validação Mínima
+                 if (!email || !pass) return mostrarErroLogin("Preencha email e senha.");
                 try {
                     await signInWithEmailAndPassword(auth, email, pass);
                     console.log("Login bem-sucedido!");
@@ -526,6 +526,9 @@
                 const email = document.getElementById('register-email').value;
                 const pass = document.getElementById('register-password').value;
                 mostrarErroLogin("");
+                // Validação Mínima
+                if (!email || !pass) return mostrarErroLogin("Preencha email e senha.");
+                if (pass.length < 6) return mostrarErroLogin("A senha deve ter pelo menos 6 caracteres.");
                 try {
                     await createUserWithEmailAndPassword(auth, email, pass);
                     console.log("Registo bem-sucedido!");
@@ -586,10 +589,11 @@
                 event.preventDefault();
                 const nome = inputNomeUtilizador.value.trim();
                 const setor = inputSetorUtilizador.value.trim();
-                if (!nome || !setor || !currentUserId || !db) return alert('Por favor, preencha o nome e o setor.');
+                 // Validação Mínima (Exemplo: Apenas nome é obrigatório)
+                if (!nome || !currentUserId || !db) return alert('O campo Nome é obrigatório.');
                 try {
                     const utilizadoresCollectionPath = `/gestao-financeira/${currentUserId}/gestao_utilizadores`;
-                    await addDoc(collection(db, utilizadoresCollectionPath), { nome, setor });
+                    await addDoc(collection(db, utilizadoresCollectionPath), { nome, setor }); // Setor pode ser vazio
                     formNovoUtilizador.reset();
                 } catch (error) { console.error("Erro ao adicionar utilizador:", error); }
             }
@@ -599,15 +603,23 @@
                 if (!utilizadorSelecionadoId || !currentUserId || !db) return alert("Erro: Nenhum utilizador selecionado ou problema de conexão.");
                 const titulo = inputTituloEntrada.value.trim();
                 const categoria = inputCategoriaEntrada.value.trim();
-                const valor = parseFloat(inputValorEntrada.value.replace(',', '.'));
+                const valorStr = inputValorEntrada.value.replace(',', '.');
+                const valor = parseFloat(valorStr);
                 const obs = inputObsEntrada.value.trim();
                 
-                if (!titulo || !categoria || isNaN(valor) || valor <= 0) return alert('Por favor, preencha título, categoria e um valor válido.');
+                 // Validação Mínima (Exemplo: Título e Valor são obrigatórios)
+                if (!titulo || !valorStr || isNaN(valor) || valor <= 0) {
+                     return alert('Os campos Título e Valor total são obrigatórios e o valor deve ser positivo.');
+                }
                 
                 const dataDaReceita = new Date(dataVisaoAtual.getFullYear(), dataVisaoAtual.getMonth(), 2).toISOString();
                 
                 const novaEntrada = {
-                    titulo, categoria, valorTotal: valor, valorRecebido: 0, observacoes: obs,
+                    titulo, 
+                    categoria: categoria || 'Sem Categoria', // Valor padrão
+                    valorTotal: valor, 
+                    valorRecebido: 0, 
+                    observacoes: obs, // Pode ser vazio
                     dataCriacao: dataDaReceita,
                     utilizadorId: utilizadorSelecionadoId
                 };
@@ -650,9 +662,13 @@
             async function processarPagamento(event) {
                 event.preventDefault();
                 const id = idEntradaPagamentoInput.value;
-                const valorAdicional = parseFloat(valorPagamentoInput.value.replace(',', '.'));
+                const valorAdicionalStr = valorPagamentoInput.value.replace(',', '.');
+                const valorAdicional = parseFloat(valorAdicionalStr);
                 
-                if (!id || isNaN(valorAdicional) || valorAdicional <= 0 || !currentUserId || !db) return alert('Por favor, insira um valor de pagamento válido.');
+                // Validação Mínima
+                if (!id || !valorAdicionalStr || isNaN(valorAdicional) || valorAdicional <= 0 || !currentUserId || !db) {
+                    return alert('Por favor, insira um valor de pagamento válido.');
+                 }
                 
                 const entrada = localEntradasCache.find(e => e.id === id);
                 if (!entrada) return alert("Ocorreu um erro ao processar o pagamento.");
@@ -685,7 +701,7 @@
                     const card = document.createElement('div');
                     card.className = 'utilizador-card';
                     card.dataset.id = user.id;
-                    card.innerHTML = `<h4>${user.nome}</h4><p>${user.setor}</p>`;
+                    card.innerHTML = `<h4>${user.nome}</h4><p>${user.setor || 'Sem Setor'}</p>`; // Exibe 'Sem Setor' se vazio
                     if (user.id === utilizadorSelecionadoId) card.classList.add('utilizador-selecionado');
                     card.addEventListener('click', () => selecionarUtilizador(user.id));
                     listaUtilizadoresDiv.appendChild(card);
@@ -733,15 +749,16 @@
                 mesAnoAtualEl.textContent = textoMesAno;
                 formTituloReceita.textContent = `Adicionar Receita para ${textoMesAno}`;
                 
-                const agora = new Date();
-                agora.setDate(1);
-                agora.setHours(0,0,0,0);
-                
-                let dataVisaoCopia = new Date(dataVisaoAtual);
-                dataVisaoCopia.setDate(1);
-                dataVisaoCopia.setHours(0,0,0,0);
-                
-                btnMesProximo.disabled = dataVisaoCopia >= agora;
+                // --- ALTERADO: Remover a desativação do botão "Próximo" ---
+                // const agora = new Date();
+                // agora.setDate(1);
+                // agora.setHours(0,0,0,0);
+                // let dataVisaoCopia = new Date(dataVisaoAtual);
+                // dataVisaoCopia.setDate(1);
+                // dataVisaoCopia.setHours(0,0,0,0);
+                // btnMesProximo.disabled = dataVisaoCopia >= agora;
+                btnMesProximo.disabled = false; // Sempre habilitado
+                // --- FIM DA ALTERAÇÃO ---
             }
             
             function renderizarAreaReceitas(userId) {
@@ -778,7 +795,7 @@
                     entradaDiv.dataset.id = entrada.id;
                     const valorRestante = Number(entrada.valorTotal) - Number(entrada.valorRecebido);
                     entradaDiv.innerHTML = `
-                        <div class="entrada-categoria">${entrada.categoria}</div>
+                        <div class="entrada-categoria">${entrada.categoria || 'Sem Categoria'}</div>
                         <div class="entrada-header">
                             <span>${entrada.titulo}</span>
                             <span>${formatarMoeda(entrada.valorTotal)}</span>
