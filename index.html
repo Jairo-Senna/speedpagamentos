@@ -82,7 +82,7 @@
             width: 100%;
         }
 
-        #login-error {
+        #login-error, #register-error {
             color: var(--cor-erro);
             font-size: 0.9rem;
             min-height: 1.2em;
@@ -347,7 +347,9 @@
     
     <!-- Scripts Firebase -->
     <script type="module">
-        // Importa os módulos necessários do Firebase
+        // =================================================================
+        // CORREÇÃO DOS IMPORTS (ETAPA 1)
+        // =================================================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { 
             getAuth, 
@@ -356,12 +358,34 @@
             signInWithEmailAndPassword, 
             signOut,
             setPersistence,
-            measurementId: "G-GN3KDTH1BX"
+            browserLocalPersistence // <--- Faltava esta importação
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            collection, 
+            addDoc, 
+            updateDoc, 
+            deleteDoc, 
+            onSnapshot, 
+            query,
+            setLogLevel
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; // <--- Faltava este bloco inteiro
+        // =================================================================
+
+        // --- SEU CONFIG ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyAJH2S6l3UkeaJx3mDwNdWLwQau7az8R40",
+          authDomain: "controle-paloma.firebaseapp.com",
+          projectId: "controle-paloma",
+          storageBucket: "controle-paloma.firebasestorage.app",
+          messagingSenderId: "410740668297",
+          appId: "1:410740668297:web:31a58c31fa254bcf7e9358",
+          measurementId: "G-GN3KDTH1BX"
         };
         // <<< FIM DA ÁREA DE CONFIGURAÇÃO >>>
 
         // --- SELETORES DO DOM (APENAS LOGIN) ---
-        // Movidos para o topo para garantir que os listeners sejam anexados
         const loginScreen = document.getElementById('login-screen');
         const appScreen = document.getElementById('app-screen');
         const loginForm = document.getElementById('login-form');
@@ -388,7 +412,7 @@
         try {
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
-            db = getFirestore(app);
+            db = getFirestore(app); // <--- Chamada de função que estava a falhar
             setLogLevel('debug');
             await setPersistence(auth, browserLocalPersistence);
         } catch (error) {
@@ -399,7 +423,7 @@
         // --- ESTADO GLOBAL DA APLICAÇÃO ---
         let currentUserId = null;
         let utilizadorSelecionadoId = null;
-        let dataVisaoAtual = new Date(); // NOVO: Controla o mês/ano
+        let dataVisaoAtual = new Date(); 
         
         let localUtilizadoresCache = [];
         let localEntradasCache = [];
@@ -407,9 +431,12 @@
         let unsubUtilizadores = () => {};
         let unsubEntradas = () => {};
 
-        // --- SELETORES DO DOM ---
-        const loginScreen = document.getElementById('login-screen');
-        const appScreen = document.getElementById('app-screen');
+        // =================================================================
+        // CORREÇÃO DAS CONSTANTES DUPLICADAS (ETAPA 2)
+        // =================================================================
+        // As constantes 'loginScreen' e 'appScreen' já foram declaradas acima.
+        // As restantes são declaradas aqui:
+        
         const logo = document.getElementById('logo');
         const formNovoUtilizador = document.getElementById('form-novo-utilizador');
         const listaUtilizadoresDiv = document.getElementById('lista-utilizadores');
@@ -426,16 +453,10 @@
         const inputCategoriaEntrada = document.getElementById('categoria-entrada');
         const inputValorEntrada = document.getElementById('valor-entrada');
         const inputObsEntrada = document.getElementById('obs-entrada');
-        
-        // NOVO: Seletores da Navegação Mensal
         const btnMesAnterior = document.getElementById('btn-mes-anterior');
         const btnMesProximo = document.getElementById('btn-mes-proximo');
         const mesAnoAtualEl = document.getElementById('mes-ano-atual');
         const formTituloReceita = document.getElementById('form-titulo-receita');
-
-        // REMOVIDO: Filtros antigos
-        // const filtroMes = ...
-        
         const totalAReceberEl = document.getElementById('total-a-receber');
         const totalRecebidoEl = document.getElementById('total-recebido');
         const saldoRestanteEl = document.getElementById('saldo-restante');
@@ -444,6 +465,7 @@
         const idEntradaPagamentoInput = document.getElementById('id-entrada-pagamento');
         const valorPagamentoInput = document.getElementById('valor-pagamento');
         const tituloModalEl = document.getElementById('titulo-modal');
+        // =================================================================
 
         // --- FUNÇÕES DE FORMATAÇÃO E AJUDA ---
         const formatarMoeda = (valor) => {
@@ -451,7 +473,6 @@
             return isNaN(numValor) ? "R$ 0,00" : numValor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         };
         const mostrarErroLogin = (msg) => {
-            // IDs de erro agora são únicos
             loginErrorEl.textContent = msg;
             registerErrorEl.textContent = msg;
         };
@@ -472,15 +493,14 @@
                 localUtilizadoresCache = [];
                 localEntradasCache = [];
                 utilizadorSelecionadoId = null;
-                renderizarUtilizadores();
-                showWelcomeScreen();
+                renderizarUtilizadores(); // Limpa a lista de utilizadores
+                showWelcomeScreen(); // Mostra a tela de boas-vindas
             }
         });
         
-        // As funções de handle agora estão separadas
         async function handleLogin(e) {
             e.preventDefault();
-            console.log("Tentativa de login..."); // Para depuração
+            console.log("Tentativa de login...");
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-password').value;
             mostrarErroLogin("");
@@ -495,7 +515,7 @@
 
         async function handleRegister(e) {
             e.preventDefault();
-            console.log("Tentativa de registo..."); // Para depuração
+            console.log("Tentativa de registo...");
             const email = document.getElementById('register-email').value;
             const pass = document.getElementById('register-password').value;
             mostrarErroLogin("");
@@ -509,12 +529,6 @@
                 else mostrarErroLogin("Erro ao criar conta.");
             }
         }
-
-        // REMOVIDO: Event listeners que estavam aqui
-        // document.getElementById('login-form').addEventListener(...)
-        // document.getElementById('register-form').addEventListener(...)
-        // document.getElementById('show-register').addEventListener(...)
-        // document.getElementById('show-login').addEventListener(...)
         
         // --- LÓGICA PRINCIPAL DA APLICAÇÃO (Após Login) ---
         
@@ -522,6 +536,10 @@
             const utilizadoresCollectionPath = `/gestao-financeira/${currentUserId}/gestao_utilizadores`;
             const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
 
+            // =================================================================
+            // CORREÇÃO DAS FUNÇÕES (ETAPA 3)
+            // As funções (query, collection, onSnapshot) agora estão importadas
+            // =================================================================
             unsubUtilizadores = onSnapshot(query(collection(db, utilizadoresCollectionPath)), (snapshot) => {
                 localUtilizadoresCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderizarUtilizadores();
@@ -540,7 +558,6 @@
             formPagamento.onsubmit = processarPagamento;
             btnCancelarModal.onclick = () => modalPagamento.classList.add('escondido');
             
-            // NOVO: Listeners da Navegação Mensal
             btnMesAnterior.onclick = () => mudarMes(-1);
             btnMesProximo.onclick = () => mudarMes(1);
             
@@ -572,8 +589,6 @@
             
             if (!titulo || !categoria || isNaN(valor) || valor <= 0) return alert('Por favor, preencha título, categoria e um valor válido.');
             
-            // ATUALIZADO: Salva a receita com base no mês de visualização
-            // Usamos o dia 2 do mês para evitar bugs de fuso horário
             const dataDaReceita = new Date(dataVisaoAtual.getFullYear(), dataVisaoAtual.getMonth(), 2).toISOString();
             
             const novaEntrada = {
@@ -665,14 +680,13 @@
             if (!utilizador) return;
             utilizadorSelecionadoId = id;
             
-            // NOVO: Reseta a data para o mês atual ao selecionar utilizador
             dataVisaoAtual = new Date(); 
             
             welcomeMessage.classList.add('escondido');
             areaReceitasDiv.classList.remove('escondido');
             tituloReceitasUtilizador.textContent = `Receitas de ${utilizador.nome}`;
             renderizarUtilizadores(); 
-            renderizarNavegacaoMes(); // NOVO
+            renderizarNavegacaoMes();
             renderizarAreaReceitas(id);
         }
         
@@ -683,14 +697,12 @@
             renderizarUtilizadores(); 
         }
 
-        // NOVO: Controla a navegação de mês
         function mudarMes(direcao) {
             dataVisaoAtual.setMonth(dataVisaoAtual.getMonth() + direcao);
             renderizarNavegacaoMes();
             renderizarAreaReceitas(utilizadorSelecionadoId);
         }
 
-        // NOVO: Formata o texto do mês/ano
         function formatarDataVisao(data) {
              return data.toLocaleDateString('pt-BR', {
                 month: 'long',
@@ -698,16 +710,14 @@
             });
         }
         
-        // NOVO: Renderiza o cabeçalho de navegação do mês
         function renderizarNavegacaoMes() {
             const textoMesAno = formatarDataVisao(dataVisaoAtual);
             mesAnoAtualEl.textContent = textoMesAno;
             formTituloReceita.textContent = `Adicionar Receita para ${textoMesAno}`;
             
-            // Desativa o botão "próximo" se estivermos no mês atual ou futuro
             const agora = new Date();
-            agora.setDate(1); // Normaliza para o dia 1
-            dataVisaoAtual.setDate(1); // Normaliza para o dia 1
+            agora.setDate(1); 
+            dataVisaoAtual.setDate(1); 
             
             if (dataVisaoAtual >= agora) {
                 btnMesProximo.disabled = true;
@@ -716,9 +726,7 @@
             }
         }
         
-        // ATUALIZADO: Filtra pelo mês/ano da dataVisaoAtual
         function renderizarAreaReceitas(userId) {
-            // Define o mês e ano com base na data de visão
             const mesSelecionado = dataVisaoAtual.getMonth() + 1;
             const anoSelecionado = dataVisaoAtual.getFullYear();
             
@@ -730,15 +738,12 @@
                     if (isNaN(data.getTime())) return false;
                     const mesEntrada = data.getMonth() + 1;
                     const anoEntrada = data.getFullYear();
-                    // Compara com o mês/ano selecionado
                     return mesEntrada === mesSelecionado && anoEntrada === anoSelecionado;
                 } catch (error) { return false; }
             });
             atualizarSumario(entradasFiltradas);
             renderizarListaEntradas(entradasFiltradas);
         }
-
-        // REMOVIDO: popularFiltros()
         
         function renderizarListaEntradas(lista) {
             listaEntradasDiv.innerHTML = '';
@@ -772,10 +777,16 @@
                 listaEntradasDiv.appendChild(entradaDiv);
             });
         }
+        
+        function atualizarSumario(lista) {
+            const totalAReceber = lista.reduce((acc, e) => acc + Number(e.valorTotal), 0);
+            const totalRecebido = lista.reduce((acc, e) => acc + Number(e.valorRecebido), 0);
+            const saldoRestante = totalAReceber - totalRecebido;
+            totalAReceberEl.textContent = formatarMoeda(totalAReceber);
+            totalRecebidoEl.textContent = formatarMoeda(totalRecebido);
+            saldoRestanteEl.textContent = formatarMoeda(saldoRestante);
+        }
 
     </script>
 </body>
 </html>
-
-
-
