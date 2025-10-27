@@ -77,7 +77,16 @@
             flex-direction: column;
             gap: 15px;
         }
-        
+
+        /* --- NOVO: Esconder o form de registo por defeito via CSS --- */
+        #register-form.escondido {
+            display: none;
+        }
+        #login-form.escondido {
+             display: none;
+        }
+        /* --- FIM --- */
+
         #login-form button, #register-form button {
             width: 100%;
         }
@@ -162,7 +171,6 @@
         .sumario-item h3 { margin: 0 0 10px; font-size: 1rem; color: #fff5ee; border: none; font-weight: normal; }
         .sumario-item p { margin: 0; font-size: 1.5rem; font-weight: bold; }
         
-        /* --- NOVO: Estilo da Navegação Mensal --- */
         .navegacao-mes {
             display: flex;
             justify-content: space-between;
@@ -172,30 +180,14 @@
             border-radius: 8px;
             margin-bottom: 20px;
         }
-        .navegacao-mes h3 {
-            color: var(--texto-titulo);
-            border: none;
-            padding: 0;
-            margin: 0;
-            font-size: 1.2rem;
-            text-transform: capitalize;
-        }
-        .navegacao-mes button {
-            width: 50px;
-            font-size: 1.5rem;
-            padding: 5px;
-        }
-        .navegacao-mes button:disabled {
-            background-color: #aaa;
-            cursor: not-allowed;
-        }
-        /* --- FIM --- */
+        .navegacao-mes h3 { color: var(--texto-titulo); border: none; padding: 0; margin: 0; font-size: 1.2rem; text-transform: capitalize; }
+        .navegacao-mes button { width: 50px; font-size: 1.5rem; padding: 5px; }
+        .navegacao-mes button:disabled { background-color: #aaa; cursor: not-allowed; }
         
         .entrada { background-color: var(--fundo-branco); border: 1px solid #eee; border-left: 5px solid var(--cor-gradiente-clara); padding: 20px; margin-bottom: 15px; border-radius: 5px; position: relative; box-shadow: var(--sombra); }
         .entrada-categoria { position: absolute; top: -1px; right: -1px; background-color: var(--texto-titulo); color: white; padding: 4px 12px; font-size: 0.8rem; font-weight: bold; border-top-right-radius: 5px; border-bottom-left-radius: 10px; }
         .entrada-header { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; }
         .entrada-header span:last-child { font-size: 1.1rem; color: var(--cor-secundaria); }
-        
         .entrada-valores { display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: #555; margin-bottom: 15px; }
         .entrada-obs { font-style: italic; color: var(--texto-claro); background-color: var(--fundo-claro); padding: 10px; border-radius: 4px; margin-bottom: 15px; word-wrap: break-word; }
         .entrada-botoes { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
@@ -215,7 +207,8 @@
         .btn-excluir { background-color: #e74c3c; }
         .btn-excluir:hover { background-color: #c0392b; }
         
-        .escondido { display: none; }
+        /* Classe geral para esconder elementos via JS */
+        .escondido { display: none !important; } /* Adicionado !important para garantir prioridade */
         
         /* Media Query para Desktops */
         @media (min-width: 769px) {
@@ -239,12 +232,12 @@
 </head>
 <body>
 
-    <!-- TELA DE LOGIN (Inicia visível) -->
+    <!-- TELA DE LOGIN -->
     <div id="login-screen">
         <div class="login-box">
             <img src="imagens/speedlogo.png" alt="Logótipo" onerror="this.alt='Logótipo'; this.style.color='var(--texto-claro)'; this.style.border='1px solid var(--borda-clara)'; this.style.padding='10px';">
             
-            <form id="login-form">
+            <form id="login-form"> <!-- Form de login visível por defeito -->
                 <h2>Entrar</h2>
                 <input type="email" id="login-email" placeholder="Email" required>
                 <input type="password" id="login-password" placeholder="Senha" required>
@@ -253,7 +246,7 @@
                 <div class="toggle-form" id="show-register">Não tem conta? Crie uma agora</div>
             </form>
             
-            <form id="register-form" class="escondido">
+            <form id="register-form" class="escondido"> <!-- Form de registo escondido por defeito -->
                 <h2>Criar Conta</h2>
                 <input type="email" id="register-email" placeholder="Email" required>
                 <input type="password" id="register-password" placeholder="Senha (mínimo 6 caracteres)" required>
@@ -264,8 +257,8 @@
         </div>
     </div>
 
-    <!-- APLICAÇÃO PRINCIPAL (Inicia escondida) -->
-    <div id="app-screen" class="app-layout escondido">
+    <!-- APLICAÇÃO PRINCIPAL -->
+    <div id="app-screen" class="app-layout escondido"> <!-- Escondida por defeito -->
         
         <aside class="sidebar">
             <header>
@@ -298,7 +291,6 @@
             <div id="area-receitas" class="escondido">
                 <h2 id="titulo-receitas-utilizador"></h2>
                 
-                <!-- NOVO: Navegação Mensal -->
                 <div class="navegacao-mes">
                     <button id="btn-mes-anterior">&lt;</button>
                     <h3 id="mes-ano-atual">...</h3>
@@ -312,7 +304,6 @@
                 </div>
 
                 <div class="form-container">
-                    <!-- ATUALIZADO: O título muda com o mês -->
                     <h3 id="form-titulo-receita">Adicionar Nova Receita</h3>
                     <form id="form-nova-entrada">
                         <input type="text" id="titulo-entrada" placeholder="Título da receita" required>
@@ -347,9 +338,9 @@
     
     <!-- Scripts Firebase -->
     <script type="module">
-        // =================================================================
-        // CORREÇÃO DOS IMPORTS (ETAPA 1)
-        // =================================================================
+        console.log("Script <type=module> iniciado."); // LOG INICIAL
+        
+        // Importações
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { 
             getAuth, 
@@ -358,7 +349,7 @@
             signInWithEmailAndPassword, 
             signOut,
             setPersistence,
-            browserLocalPersistence // <--- Faltava esta importação
+            browserLocalPersistence
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { 
             getFirestore, 
@@ -370,8 +361,7 @@
             onSnapshot, 
             query,
             setLogLevel
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; // <--- Faltava este bloco inteiro
-        // =================================================================
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         // --- SEU CONFIG ---
         const firebaseConfig = {
@@ -385,408 +375,440 @@
         };
         // <<< FIM DA ÁREA DE CONFIGURAÇÃO >>>
 
-        // --- SELETORES DO DOM (APENAS LOGIN) ---
-        const loginScreen = document.getElementById('login-screen');
-        const appScreen = document.getElementById('app-screen');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const showRegisterBtn = document.getElementById('show-register');
-        const showLoginBtn = document.getElementById('show-login');
-        const loginErrorEl = document.getElementById('login-error');
-        const registerErrorEl = document.getElementById('register-error');
-
-        // --- ANEXAR LISTENERS DE LOGIN IMEDIATAMENTE ---
-        loginForm.addEventListener('submit', handleLogin);
-        registerForm.addEventListener('submit', handleRegister);
-        showRegisterBtn.addEventListener('click', () => {
-            loginForm.classList.add('escondido');
-            registerForm.classList.remove('escondido');
-        });
-        showLoginBtn.addEventListener('click', () => {
-            registerForm.classList.add('escondido');
-            loginForm.classList.remove('escondido');
-        });
+        let appInitialized = false;
         
-        // --- INICIALIZAÇÃO FIREBASE ---
-        let app, auth, db;
-        try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app); // <--- Chamada de função que estava a falhar
-            setLogLevel('debug');
-            await setPersistence(auth, browserLocalPersistence);
-        } catch (error) {
-            console.error("Erro ao inicializar o Firebase. Verifique o seu objeto 'firebaseConfig'.", error);
-            alert("Erro crítico ao ligar à base de dados. Verifique a consola.");
-        }
+        // --- USAR DOMContentLoaded em vez de window.onload ---
+        document.addEventListener('DOMContentLoaded', async () => {
+             console.log("DOMContentLoaded disparado.");
 
-        // --- ESTADO GLOBAL DA APLICAÇÃO ---
-        let currentUserId = null;
-        let utilizadorSelecionadoId = null;
-        let dataVisaoAtual = new Date(); 
-        
-        let localUtilizadoresCache = [];
-        let localEntradasCache = [];
+            // --- SELETORES DO DOM (LOGIN) ---
+            const loginScreen = document.getElementById('login-screen');
+            const appScreen = document.getElementById('app-screen');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const showRegisterBtn = document.getElementById('show-register');
+            const showLoginBtn = document.getElementById('show-login');
+            const loginErrorEl = document.getElementById('login-error');
+            const registerErrorEl = document.getElementById('register-error');
 
-        let unsubUtilizadores = () => {};
-        let unsubEntradas = () => {};
-
-        // =================================================================
-        // CORREÇÃO DAS CONSTANTES DUPLICADAS (ETAPA 2)
-        // =================================================================
-        // As constantes 'loginScreen' e 'appScreen' já foram declaradas acima.
-        // As restantes são declaradas aqui:
-        
-        const logo = document.getElementById('logo');
-        const formNovoUtilizador = document.getElementById('form-novo-utilizador');
-        const listaUtilizadoresDiv = document.getElementById('lista-utilizadores');
-        const areaReceitasDiv = document.getElementById('area-receitas');
-        const welcomeMessage = document.getElementById('welcome-message');
-        const formNovaEntrada = document.getElementById('form-nova-entrada');
-        const listaEntradasDiv = document.getElementById('lista-entradas');
-        const modalPagamento = document.getElementById('modal-pagamento');
-        const btnLogout = document.getElementById('btn-logout');
-        const inputNomeUtilizador = document.getElementById('nome-utilizador');
-        const inputSetorUtilizador = document.getElementById('setor-utilizador');
-        const tituloReceitasUtilizador = document.getElementById('titulo-receitas-utilizador');
-        const inputTituloEntrada = document.getElementById('titulo-entrada');
-        const inputCategoriaEntrada = document.getElementById('categoria-entrada');
-        const inputValorEntrada = document.getElementById('valor-entrada');
-        const inputObsEntrada = document.getElementById('obs-entrada');
-        const btnMesAnterior = document.getElementById('btn-mes-anterior');
-        const btnMesProximo = document.getElementById('btn-mes-proximo');
-        const mesAnoAtualEl = document.getElementById('mes-ano-atual');
-        const formTituloReceita = document.getElementById('form-titulo-receita');
-        const totalAReceberEl = document.getElementById('total-a-receber');
-        const totalRecebidoEl = document.getElementById('total-recebido');
-        const saldoRestanteEl = document.getElementById('saldo-restante');
-        const formPagamento = document.getElementById('form-pagamento');
-        const btnCancelarModal = document.getElementById('btn-cancelar-modal');
-        const idEntradaPagamentoInput = document.getElementById('id-entrada-pagamento');
-        const valorPagamentoInput = document.getElementById('valor-pagamento');
-        const tituloModalEl = document.getElementById('titulo-modal');
-        // =================================================================
-
-        // --- FUNÇÕES DE FORMATAÇÃO E AJUDA ---
-        const formatarMoeda = (valor) => {
-            const numValor = Number(valor);
-            return isNaN(numValor) ? "R$ 0,00" : numValor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        };
-        const mostrarErroLogin = (msg) => {
-            loginErrorEl.textContent = msg;
-            registerErrorEl.textContent = msg;
-        };
-
-        // --- LÓGICA DE AUTENTICAÇÃO ---
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUserId = user.uid;
-                loginScreen.classList.add('escondido');
-                appScreen.classList.remove('escondido');
-                setupAppListeners();
-            } else {
-                currentUserId = null;
-                loginScreen.classList.remove('escondido');
-                appScreen.classList.add('escondido');
-                unsubUtilizadores();
-                unsubEntradas();
-                localUtilizadoresCache = [];
-                localEntradasCache = [];
-                utilizadorSelecionadoId = null;
-                renderizarUtilizadores(); // Limpa a lista de utilizadores
-                showWelcomeScreen(); // Mostra a tela de boas-vindas
-            }
-        });
-        
-        async function handleLogin(e) {
-            e.preventDefault();
-            console.log("Tentativa de login...");
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-password').value;
-            mostrarErroLogin("");
+            console.log("Seletores de login encontrados:", !!loginScreen, !!appScreen, !!loginForm, !!registerForm, !!showRegisterBtn, !!showLoginBtn);
+            
+            // --- INICIALIZAÇÃO FIREBASE ---
+            let app, auth, db;
             try {
-                await signInWithEmailAndPassword(auth, email, pass);
-                console.log("Login bem-sucedido!");
-            } catch (error) { 
-                console.error("Falha no login:", error.code);
-                mostrarErroLogin("Email ou senha inválidos."); 
-            }
-        }
-
-        async function handleRegister(e) {
-            e.preventDefault();
-            console.log("Tentativa de registo...");
-            const email = document.getElementById('register-email').value;
-            const pass = document.getElementById('register-password').value;
-            mostrarErroLogin("");
-            try {
-                await createUserWithEmailAndPassword(auth, email, pass);
-                console.log("Registo bem-sucedido!");
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                setLogLevel('debug');
+                await setPersistence(auth, browserLocalPersistence);
+                console.log("Firebase inicializado com sucesso.");
             } catch (error) {
-                console.error("Falha no registo:", error.code);
-                if (error.code === 'auth/weak-password') mostrarErroLogin("A senha deve ter pelo menos 6 caracteres.");
-                else if (error.code === 'auth/email-already-in-use') mostrarErroLogin("Este email já está em uso.");
-                else mostrarErroLogin("Erro ao criar conta.");
+                console.error("Erro ao inicializar o Firebase.", error);
+                alert("Erro crítico ao ligar à base de dados. Verifique a consola.");
+                return;
             }
-        }
-        
-        // --- LÓGICA PRINCIPAL DA APLICAÇÃO (Após Login) ---
-        
-        function setupAppListeners() {
-            const utilizadoresCollectionPath = `/gestao-financeira/${currentUserId}/gestao_utilizadores`;
-            const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
 
-            // =================================================================
-            // CORREÇÃO DAS FUNÇÕES (ETAPA 3)
-            // As funções (query, collection, onSnapshot) agora estão importadas
-            // =================================================================
-            unsubUtilizadores = onSnapshot(query(collection(db, utilizadoresCollectionPath)), (snapshot) => {
-                localUtilizadoresCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderizarUtilizadores();
-            }, (error) => console.error("Erro ao ouvir utilizadores:", error));
-            
-            unsubEntradas = onSnapshot(query(collection(db, entradasCollectionPath)), (snapshot) => {
-                localEntradasCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (utilizadorSelecionadoId) renderizarAreaReceitas(utilizadorSelecionadoId);
-            }, (error) => console.error("Erro ao ouvir receitas:", error));
-            
-            btnLogout.onclick = async () => { await signOut(auth); };
-            logo.onclick = showWelcomeScreen;
-            formNovoUtilizador.onsubmit = adicionarUtilizador;
-            formNovaEntrada.onsubmit = adicionarNovaEntrada;
-            listaEntradasDiv.onclick = handleEntradaClick;
-            formPagamento.onsubmit = processarPagamento;
-            btnCancelarModal.onclick = () => modalPagamento.classList.add('escondido');
-            
-            btnMesAnterior.onclick = () => mudarMes(-1);
-            btnMesProximo.onclick = () => mudarMes(1);
-            
-            renderizarUtilizadores();
-            showWelcomeScreen();
-        }
-
-        // --- FUNÇÕES DE DADOS (Firestore) ---
-
-        async function adicionarUtilizador(event) {
-            event.preventDefault();
-            const nome = inputNomeUtilizador.value.trim();
-            const setor = inputSetorUtilizador.value.trim();
-            if (!nome || !setor) return alert('Por favor, preencha o nome e o setor.');
+             // --- ANEXAR LISTENERS DE LOGIN (MOVIDO PARA DEPOIS DO FIREBASE INIT) ---
             try {
-                const utilizadoresCollectionPath = `/gestao-financeira/${currentUserId}/gestao_utilizadores`;
-                await addDoc(collection(db, utilizadoresCollectionPath), { nome, setor });
-                formNovoUtilizador.reset();
-            } catch (error) { console.error("Erro ao adicionar utilizador:", error); }
-        }
+                loginForm.addEventListener('submit', handleLogin);
+                registerForm.addEventListener('submit', handleRegister);
+                showRegisterBtn.addEventListener('click', () => {
+                    loginForm.classList.add('escondido');
+                    registerForm.classList.remove('escondido');
+                });
+                showLoginBtn.addEventListener('click', () => {
+                    registerForm.classList.add('escondido');
+                    loginForm.classList.remove('escondido');
+                });
+                console.log("Listeners de login/registo anexados.");
+            } catch (e) {
+                console.error("Erro CRÍTICO ao anexar listeners de login.", e);
+                return;
+            }
 
-        async function adicionarNovaEntrada(event) {
-            event.preventDefault();
-            if (!utilizadorSelecionadoId) return alert("Erro: Nenhum utilizador selecionado.");
-            const titulo = inputTituloEntrada.value.trim();
-            const categoria = inputCategoriaEntrada.value.trim();
-            const valor = parseFloat(inputValorEntrada.value.replace(',', '.'));
-            const obs = inputObsEntrada.value.trim();
-            
-            if (!titulo || !categoria || isNaN(valor) || valor <= 0) return alert('Por favor, preencha título, categoria e um valor válido.');
-            
-            const dataDaReceita = new Date(dataVisaoAtual.getFullYear(), dataVisaoAtual.getMonth(), 2).toISOString();
-            
-            const novaEntrada = {
-                titulo, categoria, valorTotal: valor, valorRecebido: 0, observacoes: obs,
-                dataCriacao: dataDaReceita,
-                utilizadorId: utilizadorSelecionadoId
+            // --- ESTADO GLOBAL ---
+            let currentUserId = null;
+            let utilizadorSelecionadoId = null;
+            let dataVisaoAtual = new Date(); 
+            let localUtilizadoresCache = [];
+            let localEntradasCache = [];
+            let unsubUtilizadores = () => {};
+            let unsubEntradas = () => {};
+
+            // --- SELETORES DO DOM (APP PRINCIPAL) ---
+            // (Verificar se existem para evitar erros caso o login falhe)
+            const logo = document.getElementById('logo');
+            const formNovoUtilizador = document.getElementById('form-novo-utilizador');
+            const listaUtilizadoresDiv = document.getElementById('lista-utilizadores');
+            const areaReceitasDiv = document.getElementById('area-receitas');
+            const welcomeMessage = document.getElementById('welcome-message');
+            const formNovaEntrada = document.getElementById('form-nova-entrada');
+            const listaEntradasDiv = document.getElementById('lista-entradas');
+            const modalPagamento = document.getElementById('modal-pagamento');
+            const btnLogout = document.getElementById('btn-logout');
+            const inputNomeUtilizador = document.getElementById('nome-utilizador');
+            const inputSetorUtilizador = document.getElementById('setor-utilizador');
+            const tituloReceitasUtilizador = document.getElementById('titulo-receitas-utilizador');
+            const inputTituloEntrada = document.getElementById('titulo-entrada');
+            const inputCategoriaEntrada = document.getElementById('categoria-entrada');
+            const inputValorEntrada = document.getElementById('valor-entrada');
+            const inputObsEntrada = document.getElementById('obs-entrada');
+            const btnMesAnterior = document.getElementById('btn-mes-anterior');
+            const btnMesProximo = document.getElementById('btn-mes-proximo');
+            const mesAnoAtualEl = document.getElementById('mes-ano-atual');
+            const formTituloReceita = document.getElementById('form-titulo-receita');
+            const totalAReceberEl = document.getElementById('total-a-receber');
+            const totalRecebidoEl = document.getElementById('total-recebido');
+            const saldoRestanteEl = document.getElementById('saldo-restante');
+            const formPagamento = document.getElementById('form-pagamento');
+            const btnCancelarModal = document.getElementById('btn-cancelar-modal');
+            const idEntradaPagamentoInput = document.getElementById('id-entrada-pagamento');
+            const valorPagamentoInput = document.getElementById('valor-pagamento');
+            const tituloModalEl = document.getElementById('titulo-modal');
+
+            // --- FUNÇÕES DE FORMATAÇÃO E AJUDA ---
+            const formatarMoeda = (valor) => {
+                const numValor = Number(valor);
+                return isNaN(numValor) ? "R$ 0,00" : numValor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             };
-            
-            try {
-                const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
-                await addDoc(collection(db, entradasCollectionPath), novaEntrada);
-                formNovaEntrada.reset();
-            } catch (error) { console.error("Erro ao adicionar receita:", error); }
-        }
+            const mostrarErroLogin = (msg) => {
+                loginErrorEl.textContent = msg;
+                registerErrorEl.textContent = msg;
+            };
 
-        async function handleEntradaClick(event) {
-            const target = event.target;
-            const entradaDiv = target.closest('.entrada');
-            if (!entradaDiv) return;
-            const id = entradaDiv.dataset.id;
-            if (!id) return;
+            // --- LÓGICA DE AUTENTICAÇÃO (COM GUARDA) ---
+            onAuthStateChanged(auth, (user) => {
+                console.log("onAuthStateChanged disparou. Status do user:", user ? user.uid : "null");
+                
+                if (user && !appInitialized) {
+                    appInitialized = true;
+                    console.log("Utilizador logado. Inicializando a app PELA PRIMEIRA VEZ.");
+                    currentUserId = user.uid;
+                    loginScreen.classList.add('escondido');
+                    appScreen.classList.remove('escondido');
+                    setupAppListeners();
+                } else if (user && appInitialized) {
+                    console.log("Estado de auth confirmado, mas app já está inicializada. Não faz nada.");
+                } else if (!user) {
+                    appInitialized = false;
+                    console.log("Utilizador fez logout. Limpando a app.");
+                    currentUserId = null;
+                    loginScreen.classList.remove('escondido');
+                    appScreen.classList.add('escondido');
+                    unsubUtilizadores();
+                    unsubEntradas();
+                    localUtilizadoresCache = [];
+                    localEntradasCache = [];
+                    utilizadorSelecionadoId = null;
+                    if(listaUtilizadoresDiv) renderizarUtilizadores(); 
+                    if(welcomeMessage) showWelcomeScreen(); 
+                }
+            });
             
-            const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
-            const docRef = doc(db, entradasCollectionPath, id);
-
-            if (target.classList.contains('btn-excluir')) {
-                if (confirm('Tem a certeza de que deseja excluir esta receita?')) {
-                    try { await deleteDoc(docRef); } catch (error) { console.error("Erro ao excluir:", error); }
+            async function handleLogin(e) {
+                e.preventDefault();
+                console.log("Tentativa de login...");
+                const email = document.getElementById('login-email').value;
+                const pass = document.getElementById('login-password').value;
+                mostrarErroLogin("");
+                try {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                    console.log("Login bem-sucedido!");
+                } catch (error) { 
+                    console.error("Falha no login:", error.code);
+                    mostrarErroLogin("Email ou senha inválidos."); 
                 }
-            } else if (target.classList.contains('btn-pago')) {
-                const entrada = localEntradasCache.find(e => e.id === id);
-                if (entrada) {
-                    tituloModalEl.textContent = entrada.titulo;
-                    idEntradaPagamentoInput.value = id;
-                    modalPagamento.classList.remove('escondido');
-                    valorPagamentoInput.focus();
-                }
-            } else if (target.classList.contains('btn-editar')) {
-                alert('Funcionalidade de Edição a ser implementada!');
             }
-        }
-        
-        async function processarPagamento(event) {
-            event.preventDefault();
-            const id = idEntradaPagamentoInput.value;
-            const valorAdicional = parseFloat(valorPagamentoInput.value.replace(',', '.'));
-            
-            if (!id || isNaN(valorAdicional) || valorAdicional <= 0) return alert('Por favor, insira um valor de pagamento válido.');
-            
-            const entrada = localEntradasCache.find(e => e.id === id);
-            if (!entrada) return alert("Ocorreu um erro ao processar o pagamento.");
 
-            const valorRecebidoNum = Number(entrada.valorRecebido);
-            const valorTotalNum = Number(entrada.valorTotal);
-            const novoValorRecebido = valorRecebidoNum + valorAdicional;
+            async function handleRegister(e) {
+                e.preventDefault();
+                console.log("Tentativa de registo...");
+                const email = document.getElementById('register-email').value;
+                const pass = document.getElementById('register-password').value;
+                mostrarErroLogin("");
+                try {
+                    await createUserWithEmailAndPassword(auth, email, pass);
+                    console.log("Registo bem-sucedido!");
+                } catch (error) {
+                    console.error("Falha no registo:", error.code);
+                    if (error.code === 'auth/weak-password') mostrarErroLogin("A senha deve ter pelo menos 6 caracteres.");
+                    else if (error.code === 'auth/email-already-in-use') mostrarErroLogin("Este email já está em uso.");
+                    else mostrarErroLogin("Erro ao criar conta.");
+                }
+            }
             
-            if (novoValorRecebido > (valorTotalNum + 0.001)) return alert('O valor recebido não pode ultrapassar o valor total da receita.');
+            // --- LÓGICA PRINCIPAL DA APLICAÇÃO (Após Login) ---
             
-            try {
+            function setupAppListeners() {
+                if (!currentUserId || !db) {
+                     console.error("Não foi possível configurar listeners: userId ou db inválidos.");
+                     return;
+                }
+                console.log("Configurando listeners da aplicação (onSnapshots)...");
+                const utilizadoresCollectionPath = `/gestao-financeira/${currentUserId}/gestao_utilizadores`;
+                const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
+
+                unsubUtilizadores = onSnapshot(query(collection(db, utilizadoresCollectionPath)), (snapshot) => {
+                    localUtilizadoresCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    console.log("Recebido snapshot de Utilizadores:", localUtilizadoresCache.length, "itens");
+                    renderizarUtilizadores();
+                }, (error) => console.error("Erro ao ouvir utilizadores:", error));
+                
+                unsubEntradas = onSnapshot(query(collection(db, entradasCollectionPath)), (snapshot) => {
+                    localEntradasCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    console.log("Recebido snapshot de Entradas:", localEntradasCache.length, "itens");
+                    if (utilizadorSelecionadoId) renderizarAreaReceitas(utilizadorSelecionadoId);
+                }, (error) => console.error("Erro ao ouvir receitas:", error));
+                
+                // Anexar listeners a elementos da App principal aqui
+                 try {
+                    if (btnLogout) btnLogout.onclick = async () => { await signOut(auth); };
+                    if (logo) logo.onclick = showWelcomeScreen;
+                    if (formNovoUtilizador) formNovoUtilizador.onsubmit = adicionarUtilizador;
+                    if (formNovaEntrada) formNovaEntrada.onsubmit = adicionarNovaEntrada;
+                    if (listaEntradasDiv) listaEntradasDiv.onclick = handleEntradaClick;
+                    if (formPagamento) formPagamento.onsubmit = processarPagamento;
+                    if (btnCancelarModal) btnCancelarModal.onclick = () => modalPagamento.classList.add('escondido');
+                    if (btnMesAnterior) btnMesAnterior.onclick = () => mudarMes(-1);
+                    if (btnMesProximo) btnMesProximo.onclick = () => mudarMes(1);
+                    console.log("Listeners da app principal anexados.");
+                 } catch(e) {
+                     console.error("Erro ao anexar listeners da app principal:", e);
+                 }
+                
+                renderizarUtilizadores();
+                showWelcomeScreen();
+            }
+
+            // --- FUNÇÕES DE DADOS (Firestore) ---
+
+            async function adicionarUtilizador(event) {
+                event.preventDefault();
+                const nome = inputNomeUtilizador.value.trim();
+                const setor = inputSetorUtilizador.value.trim();
+                if (!nome || !setor || !currentUserId || !db) return alert('Por favor, preencha o nome e o setor.');
+                try {
+                    const utilizadoresCollectionPath = `/gestao-financeira/${currentUserId}/gestao_utilizadores`;
+                    await addDoc(collection(db, utilizadoresCollectionPath), { nome, setor });
+                    formNovoUtilizador.reset();
+                } catch (error) { console.error("Erro ao adicionar utilizador:", error); }
+            }
+
+            async function adicionarNovaEntrada(event) {
+                event.preventDefault();
+                if (!utilizadorSelecionadoId || !currentUserId || !db) return alert("Erro: Nenhum utilizador selecionado ou problema de conexão.");
+                const titulo = inputTituloEntrada.value.trim();
+                const categoria = inputCategoriaEntrada.value.trim();
+                const valor = parseFloat(inputValorEntrada.value.replace(',', '.'));
+                const obs = inputObsEntrada.value.trim();
+                
+                if (!titulo || !categoria || isNaN(valor) || valor <= 0) return alert('Por favor, preencha título, categoria e um valor válido.');
+                
+                const dataDaReceita = new Date(dataVisaoAtual.getFullYear(), dataVisaoAtual.getMonth(), 2).toISOString();
+                
+                const novaEntrada = {
+                    titulo, categoria, valorTotal: valor, valorRecebido: 0, observacoes: obs,
+                    dataCriacao: dataDaReceita,
+                    utilizadorId: utilizadorSelecionadoId
+                };
+                
+                try {
+                    const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
+                    await addDoc(collection(db, entradasCollectionPath), novaEntrada);
+                    formNovaEntrada.reset();
+                } catch (error) { console.error("Erro ao adicionar receita:", error); }
+            }
+
+            async function handleEntradaClick(event) {
+                 if (!currentUserId || !db) return;
+                const target = event.target;
+                const entradaDiv = target.closest('.entrada');
+                if (!entradaDiv) return;
+                const id = entradaDiv.dataset.id;
+                if (!id) return;
+                
                 const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
                 const docRef = doc(db, entradasCollectionPath, id);
-                await updateDoc(docRef, { valorRecebido: novoValorRecebido });
-                modalPagamento.classList.add('escondido');
-                formPagamento.reset();
-            } catch (error) { console.error("Erro ao atualizar pagamento:", error); }
-        }
 
-        // --- FUNÇÕES DE RENDERIZAÇÃO (Leem do cache local) ---
-
-        function renderizarUtilizadores() {
-            listaUtilizadoresDiv.innerHTML = '';
-            if (localUtilizadoresCache.length === 0) {
-                listaUtilizadoresDiv.innerHTML = '<p>Nenhum utilizador registado.</p>';
-                return;
+                if (target.classList.contains('btn-excluir')) {
+                    if (confirm('Tem a certeza de que deseja excluir esta receita?')) {
+                        try { await deleteDoc(docRef); } catch (error) { console.error("Erro ao excluir:", error); }
+                    }
+                } else if (target.classList.contains('btn-pago')) {
+                    const entrada = localEntradasCache.find(e => e.id === id);
+                    if (entrada) {
+                        tituloModalEl.textContent = entrada.titulo;
+                        idEntradaPagamentoInput.value = id;
+                        modalPagamento.classList.remove('escondido');
+                        valorPagamentoInput.focus();
+                    }
+                } else if (target.classList.contains('btn-editar')) {
+                    alert('Funcionalidade de Edição a ser implementada!');
+                }
             }
-            localUtilizadoresCache.forEach(user => {
-                const card = document.createElement('div');
-                card.className = 'utilizador-card';
-                card.dataset.id = user.id;
-                card.innerHTML = `<h4>${user.nome}</h4><p>${user.setor}</p>`;
-                if (user.id === utilizadorSelecionadoId) card.classList.add('utilizador-selecionado');
-                card.addEventListener('click', () => selecionarUtilizador(user.id));
-                listaUtilizadoresDiv.appendChild(card);
-            });
-        }
-        
-        function selecionarUtilizador(id) {
-            const utilizador = localUtilizadoresCache.find(u => u.id === id);
-            if (!utilizador) return;
-            utilizadorSelecionadoId = id;
             
-            dataVisaoAtual = new Date(); 
-            
-            welcomeMessage.classList.add('escondido');
-            areaReceitasDiv.classList.remove('escondido');
-            tituloReceitasUtilizador.textContent = `Receitas de ${utilizador.nome}`;
-            renderizarUtilizadores(); 
-            renderizarNavegacaoMes();
-            renderizarAreaReceitas(id);
-        }
-        
-        function showWelcomeScreen() {
-            utilizadorSelecionadoId = null;
-            welcomeMessage.classList.remove('escondido');
-            areaReceitasDiv.classList.add('escondido');
-            renderizarUtilizadores(); 
-        }
+            async function processarPagamento(event) {
+                event.preventDefault();
+                const id = idEntradaPagamentoInput.value;
+                const valorAdicional = parseFloat(valorPagamentoInput.value.replace(',', '.'));
+                
+                if (!id || isNaN(valorAdicional) || valorAdicional <= 0 || !currentUserId || !db) return alert('Por favor, insira um valor de pagamento válido.');
+                
+                const entrada = localEntradasCache.find(e => e.id === id);
+                if (!entrada) return alert("Ocorreu um erro ao processar o pagamento.");
 
-        function mudarMes(direcao) {
-            dataVisaoAtual.setMonth(dataVisaoAtual.getMonth() + direcao);
-            renderizarNavegacaoMes();
-            renderizarAreaReceitas(utilizadorSelecionadoId);
-        }
-
-        function formatarDataVisao(data) {
-             return data.toLocaleDateString('pt-BR', {
-                month: 'long',
-                year: 'numeric'
-            });
-        }
-        
-        function renderizarNavegacaoMes() {
-            const textoMesAno = formatarDataVisao(dataVisaoAtual);
-            mesAnoAtualEl.textContent = textoMesAno;
-            formTituloReceita.textContent = `Adicionar Receita para ${textoMesAno}`;
-            
-            const agora = new Date();
-            agora.setDate(1); 
-            dataVisaoAtual.setDate(1); 
-            
-            if (dataVisaoAtual >= agora) {
-                btnMesProximo.disabled = true;
-            } else {
-                btnMesProximo.disabled = false;
-            }
-        }
-        
-        function renderizarAreaReceitas(userId) {
-            const mesSelecionado = dataVisaoAtual.getMonth() + 1;
-            const anoSelecionado = dataVisaoAtual.getFullYear();
-            
-            let entradasDoUtilizador = localEntradasCache.filter(e => e.utilizadorId === userId);
-            
-            let entradasFiltradas = entradasDoUtilizador.filter(e => {
+                const valorRecebidoNum = Number(entrada.valorRecebido);
+                const valorTotalNum = Number(entrada.valorTotal);
+                const novoValorRecebido = valorRecebidoNum + valorAdicional;
+                
+                if (novoValorRecebido > (valorTotalNum + 0.001)) return alert('O valor recebido não pode ultrapassar o valor total da receita.');
+                
                 try {
-                    const data = new Date(e.dataCriacao);
-                    if (isNaN(data.getTime())) return false;
-                    const mesEntrada = data.getMonth() + 1;
-                    const anoEntrada = data.getFullYear();
-                    return mesEntrada === mesSelecionado && anoEntrada === anoSelecionado;
-                } catch (error) { return false; }
-            });
-            atualizarSumario(entradasFiltradas);
-            renderizarListaEntradas(entradasFiltradas);
-        }
-        
-        function renderizarListaEntradas(lista) {
-            listaEntradasDiv.innerHTML = '';
-            if (lista.length === 0) {
-                listaEntradasDiv.innerHTML = '<p>Nenhuma receita encontrada para este mês.</p>';
-                return;
+                    const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
+                    const docRef = doc(db, entradasCollectionPath, id);
+                    await updateDoc(docRef, { valorRecebido: novoValorRecebido });
+                    modalPagamento.classList.add('escondido');
+                    formPagamento.reset();
+                } catch (error) { console.error("Erro ao atualizar pagamento:", error); }
             }
-            lista.sort((a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao));
-            lista.forEach(entrada => {
-                const entradaDiv = document.createElement('div');
-                entradaDiv.classList.add('entrada');
-                entradaDiv.dataset.id = entrada.id;
-                const valorRestante = Number(entrada.valorTotal) - Number(entrada.valorRecebido);
-                entradaDiv.innerHTML = `
-                    <div class="entrada-categoria">${entrada.categoria}</div>
-                    <div class="entrada-header">
-                        <span>${entrada.titulo}</span>
-                        <span>${formatarMoeda(entrada.valorTotal)}</span>
-                    </div>
-                    <div class="entrada-valores">
-                        <span><strong>Recebido:</strong> ${formatarMoeda(entrada.valorRecebido)}</span>
-                        <span><strong>Restante:</strong> ${formatarMoeda(valorRestante)}</span>
-                    </div>
-                    ${entrada.observacoes ? `<div class="entrada-obs"><strong>Obs:</strong> ${entrada.observacoes}</div>` : ''}
-                    <div class="entrada-botoes">
-                        <button class="btn-pago">Adicionar Pagamento</button>
-                        <button class="btn-editar">Editar</button>
-                        <button class="btn-excluir">Excluir</button>
-                    </div>
-                `;
-                listaEntradasDiv.appendChild(entradaDiv);
-            });
-        }
-        
-        function atualizarSumario(lista) {
-            const totalAReceber = lista.reduce((acc, e) => acc + Number(e.valorTotal), 0);
-            const totalRecebido = lista.reduce((acc, e) => acc + Number(e.valorRecebido), 0);
-            const saldoRestante = totalAReceber - totalRecebido;
-            totalAReceberEl.textContent = formatarMoeda(totalAReceber);
-            totalRecebidoEl.textContent = formatarMoeda(totalRecebido);
-            saldoRestanteEl.textContent = formatarMoeda(saldoRestante);
-        }
 
+            // --- FUNÇÕES DE RENDERIZAÇÃO (Leem do cache local) ---
+
+            function renderizarUtilizadores() {
+                if (!listaUtilizadoresDiv) { console.log("renderizarUtilizadores: listaUtilizadoresDiv não encontrado"); return; }
+                listaUtilizadoresDiv.innerHTML = '';
+                if (localUtilizadoresCache.length === 0) {
+                    listaUtilizadoresDiv.innerHTML = '<p>Nenhum utilizador registado.</p>';
+                    return;
+                }
+                localUtilizadoresCache.forEach(user => {
+                    const card = document.createElement('div');
+                    card.className = 'utilizador-card';
+                    card.dataset.id = user.id;
+                    card.innerHTML = `<h4>${user.nome}</h4><p>${user.setor}</p>`;
+                    if (user.id === utilizadorSelecionadoId) card.classList.add('utilizador-selecionado');
+                    card.addEventListener('click', () => selecionarUtilizador(user.id));
+                    listaUtilizadoresDiv.appendChild(card);
+                });
+            }
+            
+            function selecionarUtilizador(id) {
+                const utilizador = localUtilizadoresCache.find(u => u.id === id);
+                if (!utilizador || !welcomeMessage || !areaReceitasDiv || !tituloReceitasUtilizador) return;
+                utilizadorSelecionadoId = id;
+                
+                dataVisaoAtual = new Date(); 
+                
+                welcomeMessage.classList.add('escondido');
+                areaReceitasDiv.classList.remove('escondido');
+                tituloReceitasUtilizador.textContent = `Receitas de ${utilizador.nome}`;
+                renderizarUtilizadores(); 
+                renderizarNavegacaoMes();
+                renderizarAreaReceitas(id);
+            }
+            
+            function showWelcomeScreen() {
+                utilizadorSelecionadoId = null;
+                if(welcomeMessage) welcomeMessage.classList.remove('escondido');
+                if(areaReceitasDiv) areaReceitasDiv.classList.add('escondido');
+                renderizarUtilizadores(); 
+            }
+
+            function mudarMes(direcao) {
+                dataVisaoAtual.setMonth(dataVisaoAtual.getMonth() + direcao);
+                renderizarNavegacaoMes();
+                if (utilizadorSelecionadoId) renderizarAreaReceitas(utilizadorSelecionadoId);
+            }
+
+            function formatarDataVisao(data) {
+                 return data.toLocaleDateString('pt-BR', {
+                    month: 'long',
+                    year: 'numeric'
+                });
+            }
+            
+            function renderizarNavegacaoMes() {
+                 if (!mesAnoAtualEl || !formTituloReceita || !btnMesProximo) return;
+                const textoMesAno = formatarDataVisao(dataVisaoAtual);
+                mesAnoAtualEl.textContent = textoMesAno;
+                formTituloReceita.textContent = `Adicionar Receita para ${textoMesAno}`;
+                
+                const agora = new Date();
+                agora.setDate(1);
+                agora.setHours(0,0,0,0);
+                
+                let dataVisaoCopia = new Date(dataVisaoAtual);
+                dataVisaoCopia.setDate(1);
+                dataVisaoCopia.setHours(0,0,0,0);
+                
+                btnMesProximo.disabled = dataVisaoCopia >= agora;
+            }
+            
+            function renderizarAreaReceitas(userId) {
+                if (!userId) return;
+                const mesSelecionado = dataVisaoAtual.getMonth() + 1;
+                const anoSelecionado = dataVisaoAtual.getFullYear();
+                
+                let entradasDoUtilizador = localEntradasCache.filter(e => e.utilizadorId === userId);
+                
+                let entradasFiltradas = entradasDoUtilizador.filter(e => {
+                    try {
+                        const data = new Date(e.dataCriacao);
+                        if (isNaN(data.getTime())) return false;
+                        const mesEntrada = data.getMonth() + 1;
+                        const anoEntrada = data.getFullYear();
+                        return mesEntrada === mesSelecionado && anoEntrada === anoSelecionado;
+                    } catch (error) { return false; }
+                });
+                atualizarSumario(entradasFiltradas);
+                renderizarListaEntradas(entradasFiltradas);
+            }
+            
+            function renderizarListaEntradas(lista) {
+                if (!listaEntradasDiv) return;
+                listaEntradasDiv.innerHTML = '';
+                if (lista.length === 0) {
+                    listaEntradasDiv.innerHTML = '<p>Nenhuma receita encontrada para este mês.</p>';
+                    return;
+                }
+                lista.sort((a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao));
+                lista.forEach(entrada => {
+                    const entradaDiv = document.createElement('div');
+                    entradaDiv.classList.add('entrada');
+                    entradaDiv.dataset.id = entrada.id;
+                    const valorRestante = Number(entrada.valorTotal) - Number(entrada.valorRecebido);
+                    entradaDiv.innerHTML = `
+                        <div class="entrada-categoria">${entrada.categoria}</div>
+                        <div class="entrada-header">
+                            <span>${entrada.titulo}</span>
+                            <span>${formatarMoeda(entrada.valorTotal)}</span>
+                        </div>
+                        <div class="entrada-valores">
+                            <span><strong>Recebido:</strong> ${formatarMoeda(entrada.valorRecebido)}</span>
+                            <span><strong>Restante:</strong> ${formatarMoeda(valorRestante)}</span>
+                        </div>
+                        ${entrada.observacoes ? `<div class="entrada-obs"><strong>Obs:</strong> ${entrada.observacoes}</div>` : ''}
+                        <div class="entrada-botoes">
+                            <button class="btn-pago">Adicionar Pagamento</button>
+                            <button class="btn-editar">Editar</button>
+                            <button class="btn-excluir">Excluir</button>
+                        </div>
+                    `;
+                    listaEntradasDiv.appendChild(entradaDiv);
+                });
+            }
+            
+            function atualizarSumario(lista) {
+                 if (!totalAReceberEl || !totalRecebidoEl || !saldoRestanteEl) return;
+                const totalAReceber = lista.reduce((acc, e) => acc + Number(e.valorTotal), 0);
+                const totalRecebido = lista.reduce((acc, e) => acc + Number(e.valorRecebido), 0);
+                const saldoRestante = totalAReceber - totalRecebido;
+                totalAReceberEl.textContent = formatarMoeda(totalAReceber);
+                totalRecebidoEl.textContent = formatarMoeda(totalRecebido);
+                saldoRestanteEl.textContent = formatarMoeda(saldoRestante);
+            }
+        
+        }); // --- Fim do DOMContentLoaded ---
     </script>
 </body>
 </html>
