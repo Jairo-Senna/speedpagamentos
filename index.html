@@ -6,8 +6,7 @@
     <title>Controlador Financeiro</title>
     
     <style>
-        /* --- Início do CSS --- */
-        
+        /* --- Estilos Gerais e Tema Laranja --- */
         :root {
             --cor-primaria: #e55015;
             --cor-secundaria: #ff7b00;
@@ -22,6 +21,7 @@
             --fundo-app: rgba(255, 255, 255, 0.8);
             --sombra: 0 4px 10px rgba(0,0,0,0.08);
             --cor-erro: #c0392b;
+            --cor-sucesso: #27ae60;
         }
 
         /* --- Estilos de Scroll --- */
@@ -61,56 +61,16 @@
             text-align: center;
         }
         
-        .login-box h2 {
-            color: var(--texto-titulo);
-            border: none;
-            margin-top: 0;
-        }
-        
-        .login-box img {
-            max-width: 120px;
-            margin-bottom: 20px;
-        }
-
-        #login-form, #register-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        /* --- Esconder o form de registo por defeito via CSS --- */
-        #register-form.escondido {
-            display: none;
-        }
-        #login-form.escondido {
-             display: none;
-        }
-        /* --- FIM --- */
-
-        #login-form button, #register-form button {
-            width: 100%;
-        }
-
-        #login-error, #register-error {
-            color: var(--cor-erro);
-            font-size: 0.9rem;
-            min-height: 1.2em;
-        }
-        
-        .toggle-form {
-            color: var(--cor-secundaria);
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 0.9rem;
-            margin-top: 15px;
-        }
+        .login-box h2 { color: var(--texto-titulo); border: none; margin-top: 0; }
+        .login-box img { max-width: 120px; margin-bottom: 20px; }
+        #login-form, #register-form { display: flex; flex-direction: column; gap: 15px; }
+        #register-form.escondido, #login-form.escondido { display: none; }
+        #login-form button, #register-form button { width: 100%; }
+        #login-error, #register-error { color: var(--cor-erro); font-size: 0.9rem; min-height: 1.2em; }
+        .toggle-form { color: var(--cor-secundaria); text-decoration: underline; cursor: pointer; font-size: 0.9rem; margin-top: 15px; }
 
         /* --- ESTRUTURA DA APP --- */
-        .app-layout {
-            display: grid;
-            grid-template-columns: 1fr;
-            height: 100vh;
-        }
+        .app-layout { display: grid; grid-template-columns: 1fr; height: 100vh; }
 
         .sidebar {
             background-color: var(--fundo-claro);
@@ -123,24 +83,12 @@
             top: 0;
         }
 
-        .sidebar header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--borda-clara);
-        }
-
+        .sidebar header { text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid var(--borda-clara); }
         #logo { max-width: 150px; height: auto; cursor: pointer; }
         .sidebar-section { margin-bottom: 30px; }
         .sidebar-section h3 { color: var(--texto-titulo); border-bottom: 2px solid var(--cor-gradiente-clara); padding-bottom: 8px; margin-top: 0; }
-        
-        #btn-logout {
-            background-color: var(--texto-claro);
-            margin-top: 20px;
-        }
-        #btn-logout:hover {
-            background-color: var(--cor-erro);
-        }
+        #btn-logout { background-color: var(--texto-claro); margin-top: 20px; }
+        #btn-logout:hover { background-color: var(--cor-erro); }
 
         .main-content {
             padding: 20px;
@@ -182,52 +130,83 @@
         }
         .navegacao-mes h3 { color: var(--texto-titulo); border: none; padding: 0; margin: 0; font-size: 1.2rem; text-transform: capitalize; }
         .navegacao-mes button { width: 50px; font-size: 1.5rem; padding: 5px; }
-        .navegacao-mes button:disabled { background-color: #aaa; cursor: not-allowed; }
         
+        /* --- Cards de Receita --- */
         .entrada { background-color: var(--fundo-branco); border: 1px solid #eee; border-left: 5px solid var(--cor-gradiente-clara); padding: 20px; margin-bottom: 15px; border-radius: 5px; position: relative; box-shadow: var(--sombra); }
         .entrada-categoria { position: absolute; top: -1px; right: -1px; background-color: var(--texto-titulo); color: white; padding: 4px 12px; font-size: 0.8rem; font-weight: bold; border-top-right-radius: 5px; border-bottom-left-radius: 10px; }
         .entrada-header { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; }
         .entrada-header span:last-child { font-size: 1.1rem; color: var(--cor-secundaria); }
         .entrada-valores { display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: #555; margin-bottom: 15px; }
-        .entrada-obs { font-style: italic; color: var(--texto-claro); background-color: var(--fundo-claro); padding: 10px; border-radius: 4px; margin-bottom: 15px; word-wrap: break-word; }
+        .entrada-obs { font-style: italic; color: var(--texto-claro); background-color: var(--fundo-claro); padding: 10px; border-radius: 4px; margin-bottom: 15px; word-wrap: break-word; font-size: 0.9rem; border-left: 3px solid var(--cor-gradiente-clara); }
+        
+        /* --- Histórico de Pagamentos --- */
+        .historico-container {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--borda-inputs);
+        }
+        .historico-titulo { font-size: 0.85rem; font-weight: bold; color: var(--texto-titulo); margin-bottom: 8px; display: block; }
+        .pagamento-item {
+            background: var(--fundo-claro);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: help;
+            position: relative;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .pagamento-item:hover { border-color: var(--cor-secundaria); background: #fff; }
+        .pagamento-item .valor-pago { font-weight: bold; color: var(--cor-sucesso); }
+        
+        /* Tooltip Simples */
+        .pagamento-item:hover::after {
+            content: attr(data-obs);
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            width: 200px;
+            font-size: 0.75rem;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            pointer-events: none;
+            white-space: normal;
+        }
+
         .entrada-botoes { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .entrada-botoes button { width: 100%; font-size: 0.8rem; padding: 8px 12px; }
 
+        /* Modal */
         .modal-container {position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000;}
-        .modal {background-color: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
-        #form-pagamento { display: flex; flex-direction: column; gap: 15px; }
-        .modal-botoes { display: flex; gap: 10px; justify-content: flex-end; }
-        .modal-botoes button, #btn-cancelar-modal { width: auto; }
+        .modal {background-color: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 450px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
+        .modal-botoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
+        .modal-botoes button { width: auto; }
         #btn-cancelar-modal { background-color: #95a5a6; }
-        #btn-cancelar-modal:hover { background-color: #7f8c8d; }
-        .btn-pago { background-color: #2ecc71; }
-        .btn-pago:hover { background-color: #27ae60; }
-        .btn-editar { background-color: #f1c40f; }
-        .btn-editar:hover { background-color: #f39c12; }
-        .btn-excluir { background-color: #e74c3c; }
-        .btn-excluir:hover { background-color: #c0392b; }
+        .btn-pago { background-color: var(--cor-sucesso); }
+        .btn-excluir { background-color: var(--cor-erro); }
         
-        /* Classe geral para esconder elementos via JS */
-        .escondido { display: none !important; } /* Adicionado !important para garantir prioridade */
+        .escondido { display: none !important; }
         
-        /* Media Query para Desktops */
         @media (min-width: 769px) {
             body { overflow: hidden; }
             .app-layout { grid-template-columns: 320px 1fr; }
             .sidebar { height: 100vh; overflow-y: auto; position: sticky; }
             .main-content { padding: 40px; overflow-y: auto; height: 100vh; }
-            #welcome-message { padding: 100px 20px; }
             .sumario { flex-direction: row; gap: 0; }
-            .navegacao-mes { padding: 20px 30px; }
-            .navegacao-mes h3 { font-size: 1.5rem; }
             .entrada-header { flex-direction: row; justify-content: space-between; align-items: center; }
-            .entrada-header span:last-child { font-size: 1.2rem; }
             .entrada-valores { flex-direction: row; gap: 20px; }
             .entrada-botoes { flex-direction: row; gap: 10px; }
             .entrada-botoes button { width: auto; }
         }
-        
-        /* --- Fim do CSS --- */
     </style>
 </head>
 <body>
@@ -236,8 +215,7 @@
     <div id="login-screen">
         <div class="login-box">
             <img src="imagens/speedlogo.png" alt="Logótipo" onerror="this.alt='Logótipo'; this.style.color='var(--texto-claro)'; this.style.border='1px solid var(--borda-clara)'; this.style.padding='10px';">
-            
-            <form id="login-form"> <!-- Form de login visível por defeito -->
+            <form id="login-form">
                 <h2>Entrar</h2>
                 <input type="email" id="login-email" placeholder="Email">
                 <input type="password" id="login-password" placeholder="Senha">
@@ -245,8 +223,7 @@
                 <button type="submit">Login</button>
                 <div class="toggle-form" id="show-register">Não tem conta? Crie uma agora</div>
             </form>
-            
-            <form id="register-form" class="escondido"> <!-- Form de registo escondido por defeito -->
+            <form id="register-form" class="escondido">
                 <h2>Criar Conta</h2>
                 <input type="email" id="register-email" placeholder="Email">
                 <input type="password" id="register-password" placeholder="Senha (mínimo 6 caracteres)">
@@ -258,13 +235,9 @@
     </div>
 
     <!-- APLICAÇÃO PRINCIPAL -->
-    <div id="app-screen" class="app-layout escondido"> <!-- Escondida por defeito -->
-        
+    <div id="app-screen" class="app-layout escondido">
         <aside class="sidebar">
-            <header>
-                <img src="imagens/speedlogo.png" alt="Logótipo da Empresa" id="logo" onerror="this.alt='Logótipo'; this.style.color='var(--texto-claro)';">
-            </header>
-            
+            <header><img src="imagens/speedlogo.png" alt="Logótipo" id="logo" onerror="this.alt='Logótipo';"></header>
             <div class="sidebar-section">
                 <form id="form-novo-utilizador" class="form-container">
                     <h3>Adicionar Utilizador</h3>
@@ -273,159 +246,112 @@
                     <button type="submit">Adicionar</button>
                 </form>
             </div>
-
             <div class="sidebar-section">
                 <h3>Utilizadores</h3>
                 <div id="lista-utilizadores" class="lista-vertical-utilizadores"></div>
             </div>
-            
             <button id="btn-logout">Sair</button>
         </aside>
 
         <main class="main-content">
             <div id="welcome-message">
                 <h2>Bem-vindo!</h2>
-                <p>Selecione um utilizador à esquerda para ver os detalhes ou adicione um novo.</p>
+                <p>Selecione um utilizador à esquerda para gerir as finanças.</p>
             </div>
 
             <div id="area-receitas" class="escondido">
                 <h2 id="titulo-receitas-utilizador"></h2>
-                
                 <div class="navegacao-mes">
                     <button id="btn-mes-anterior">&lt;</button>
                     <h3 id="mes-ano-atual">...</h3>
                     <button id="btn-mes-proximo">&gt;</button>
                 </div>
-
                 <div class="sumario">
-                    <div class="sumario-item"><h3>Total a Receber</h3><p id="total-a-receber">R$ 0.00</p></div>
-                    <div class="sumario-item"><h3>Total Já Recebido</h3><p id="total-recebido">R$ 0.00</p></div>
-                    <div class="sumario-item"><h3>Saldo Restante</h3><p id="saldo-restante">R$ 0.00</p></div>
+                    <div class="sumario-item"><h3>Total a Receber</h3><p id="total-a-receber">R$ 0,00</p></div>
+                    <div class="sumario-item"><h3>Total Recebido</h3><p id="total-recebido">R$ 0,00</p></div>
+                    <div class="sumario-item"><h3>Saldo Restante</h3><p id="saldo-restante">R$ 0,00</p></div>
                 </div>
-
                 <div class="form-container">
                     <h3 id="form-titulo-receita">Adicionar Nova Receita</h3>
                     <form id="form-nova-entrada">
-                        <input type="text" id="titulo-entrada" placeholder="Título da receita">
-                        <input type="text" id="categoria-entrada" placeholder="Categoria (ex: Salário)">
-                        <input type="number" id="valor-entrada" placeholder="Valor total (R$)" step="0.01">
-                        <textarea id="obs-entrada" placeholder="Observações (opcional)"></textarea>
+                        <input type="text" id="titulo-entrada" placeholder="Título (ex: Salário Março)">
+                        <input type="text" id="categoria-entrada" placeholder="Categoria">
+                        <input type="number" id="valor-entrada" placeholder="Valor Total" step="0.01">
+                        <textarea id="obs-entrada" placeholder="Observações iniciais"></textarea>
                         <button type="submit">Adicionar Receita</button>
                     </form>
                 </div>
-
                 <h3>Receitas Registadas</h3>
                 <div id="lista-entradas"></div>
             </div>
         </main>
     </div>
 
-    <!-- Modal de Pagamento -->
+    <!-- MODAL DE PAGAMENTO (ATUALIZADO) -->
     <div id="modal-pagamento" class="modal-container escondido">
         <div class="modal">
-            <h3>Adicionar Pagamento Recebido</h3>
+            <h3>Confirmar Recebimento</h3>
             <form id="form-pagamento">
-                <p>Adicionar pagamento para: <strong id="titulo-modal"></strong></p>
+                <p>Adicionar valor para: <strong id="titulo-modal"></strong></p>
                 <input type="hidden" id="id-entrada-pagamento">
-                <input type="number" id="valor-pagamento" placeholder="Valor recebido (R$)" step="0.01"> <!-- required removido -->
+                <input type="number" id="valor-pagamento" placeholder="Valor recebido hoje (R$)" step="0.01">
+                <textarea id="obs-pagamento" placeholder="Ex: Recebi em PIX / Dinheiro em mãos (Data: 23/03)"></textarea>
                 <div class="modal-botoes">
-                    <button type="submit">Confirmar</button>
+                    <button type="submit" class="btn-pago">Confirmar Pagamento</button>
                     <button type="button" id="btn-cancelar-modal">Cancelar</button>
                 </div>
             </form>
         </div>
     </div>
     
-    <!-- Scripts Firebase -->
     <script type="module">
-        console.log("Script <type=module> iniciado."); // LOG INICIAL
-        
-        // Importações
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { 
-            getAuth, 
-            onAuthStateChanged, 
-            createUserWithEmailAndPassword, 
-            signInWithEmailAndPassword, 
-            signOut,
-            setPersistence,
-            browserLocalPersistence
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { 
-            getFirestore, 
-            doc, 
-            collection, 
-            addDoc, 
-            updateDoc, 
-            deleteDoc, 
-            onSnapshot, 
-            query,
-            setLogLevel
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, collection, addDoc, updateDoc, deleteDoc, onSnapshot, query, setLogLevel } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // --- SEU CONFIG ---
         const firebaseConfig = {
-          apiKey: "AIzaSyAJH2S6l3UkeaJx3mDwNdWLwQau7az8R40",
-          authDomain: "controle-paloma.firebaseapp.com",
-          projectId: "controle-paloma",
-          storageBucket: "controle-paloma.firebasestorage.app",
-          messagingSenderId: "410740668297",
-          appId: "1:410740668297:web:31a58c31fa254bcf7e9358",
-          measurementId: "G-GN3KDTH1BX"
+            apiKey: "AIzaSyAJH2S6l3UkeaJx3mDwNdWLwQau7az8R40",
+            authDomain: "controle-paloma.firebaseapp.com",
+            projectId: "controle-paloma",
+            storageBucket: "controle-paloma.firebasestorage.app",
+            messagingSenderId: "410740668297",
+            appId: "1:410740668297:web:31a58c31fa254bcf7e9358",
+            measurementId: "G-GN3KDTH1BX"
         };
-        // <<< FIM DA ÁREA DE CONFIGURAÇÃO >>>
 
         let appInitialized = false;
         
         document.addEventListener('DOMContentLoaded', async () => {
-             console.log("DOMContentLoaded disparado.");
-
-            // --- SELETORES DO DOM (LOGIN) ---
             const loginScreen = document.getElementById('login-screen');
             const appScreen = document.getElementById('app-screen');
             const loginForm = document.getElementById('login-form');
             const registerForm = document.getElementById('register-form');
-            const showRegisterBtn = document.getElementById('show-register');
-            const showLoginBtn = document.getElementById('show-login');
             const loginErrorEl = document.getElementById('login-error');
             const registerErrorEl = document.getElementById('register-error');
 
-            console.log("Seletores de login encontrados:", !!loginScreen, !!appScreen, !!loginForm, !!registerForm, !!showRegisterBtn, !!showLoginBtn);
-            
-            // --- INICIALIZAÇÃO FIREBASE ---
             let app, auth, db;
             try {
                 app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
-                setLogLevel('debug');
                 await setPersistence(auth, browserLocalPersistence);
-                console.log("Firebase inicializado com sucesso.");
-            } catch (error) {
-                console.error("Erro ao inicializar o Firebase.", error);
-                alert("Erro crítico ao ligar à base de dados. Verifique a consola.");
-                return;
-            }
+            } catch (error) { console.error(error); return; }
 
-             // --- ANEXAR LISTENERS DE LOGIN ---
-            try {
-                loginForm.addEventListener('submit', handleLogin);
-                registerForm.addEventListener('submit', handleRegister);
-                showRegisterBtn.addEventListener('click', () => {
-                    loginForm.classList.add('escondido');
-                    registerForm.classList.remove('escondido');
-                });
-                showLoginBtn.addEventListener('click', () => {
-                    registerForm.classList.add('escondido');
-                    loginForm.classList.remove('escondido');
-                });
-                console.log("Listeners de login/registo anexados.");
-            } catch (e) {
-                console.error("Erro CRÍTICO ao anexar listeners de login.", e);
-                return;
-            }
+            // Listeners de Login/Toggle
+            document.getElementById('show-register').onclick = () => { loginForm.classList.add('escondido'); registerForm.classList.remove('escondido'); };
+            document.getElementById('show-login').onclick = () => { registerForm.classList.add('escondido'); loginForm.classList.remove('escondido'); };
+            loginForm.onsubmit = async (e) => {
+                e.preventDefault();
+                try { await signInWithEmailAndPassword(auth, loginForm["login-email"].value, loginForm["login-password"].value); }
+                catch (err) { loginErrorEl.textContent = "Erro ao entrar."; }
+            };
+            registerForm.onsubmit = async (e) => {
+                e.preventDefault();
+                try { await createUserWithEmailAndPassword(auth, registerForm["register-email"].value, registerForm["register-password"].value); }
+                catch (err) { registerErrorEl.textContent = "Erro ao criar conta."; }
+            };
 
-            // --- ESTADO GLOBAL ---
+            // Estado Global
             let currentUserId = null;
             let utilizadorSelecionadoId = null;
             let dataVisaoAtual = new Date(); 
@@ -434,398 +360,16 @@
             let unsubUtilizadores = () => {};
             let unsubEntradas = () => {};
 
-            // --- SELETORES DO DOM (APP PRINCIPAL) ---
-            const logo = document.getElementById('logo');
-            const formNovoUtilizador = document.getElementById('form-novo-utilizador');
+            // Seletores App
             const listaUtilizadoresDiv = document.getElementById('lista-utilizadores');
             const areaReceitasDiv = document.getElementById('area-receitas');
             const welcomeMessage = document.getElementById('welcome-message');
-            const formNovaEntrada = document.getElementById('form-nova-entrada');
             const listaEntradasDiv = document.getElementById('lista-entradas');
             const modalPagamento = document.getElementById('modal-pagamento');
-            const btnLogout = document.getElementById('btn-logout');
-            const inputNomeUtilizador = document.getElementById('nome-utilizador');
-            const inputSetorUtilizador = document.getElementById('setor-utilizador');
-            const tituloReceitasUtilizador = document.getElementById('titulo-receitas-utilizador');
-            const inputTituloEntrada = document.getElementById('titulo-entrada');
-            const inputCategoriaEntrada = document.getElementById('categoria-entrada');
-            const inputValorEntrada = document.getElementById('valor-entrada');
-            const inputObsEntrada = document.getElementById('obs-entrada');
-            const btnMesAnterior = document.getElementById('btn-mes-anterior');
-            const btnMesProximo = document.getElementById('btn-mes-proximo');
-            const mesAnoAtualEl = document.getElementById('mes-ano-atual');
-            const formTituloReceita = document.getElementById('form-titulo-receita');
             const totalAReceberEl = document.getElementById('total-a-receber');
             const totalRecebidoEl = document.getElementById('total-recebido');
             const saldoRestanteEl = document.getElementById('saldo-restante');
-            const formPagamento = document.getElementById('form-pagamento');
-            const btnCancelarModal = document.getElementById('btn-cancelar-modal');
-            const idEntradaPagamentoInput = document.getElementById('id-entrada-pagamento');
-            const valorPagamentoInput = document.getElementById('valor-pagamento');
-            const tituloModalEl = document.getElementById('titulo-modal');
 
-            // --- FUNÇÕES DE FORMATAÇÃO E AJUDA ---
-            const formatarMoeda = (valor) => {
-                const numValor = Number(valor);
-                return isNaN(numValor) ? "R$ 0,00" : numValor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            };
-            const mostrarErroLogin = (msg) => {
-                 if (loginErrorEl) loginErrorEl.textContent = msg;
-                 if (registerErrorEl) registerErrorEl.textContent = msg;
-            };
-
-            // --- LÓGICA DE AUTENTICAÇÃO (COM GUARDA) ---
             onAuthStateChanged(auth, (user) => {
-                console.log("onAuthStateChanged disparou. Status do user:", user ? user.uid : "null");
-                
                 if (user && !appInitialized) {
-                    appInitialized = true;
-                    console.log("Utilizador logado. Inicializando a app PELA PRIMEIRA VEZ.");
-                    currentUserId = user.uid;
-                    loginScreen.classList.add('escondido');
-                    appScreen.classList.remove('escondido');
-                    setupAppListeners();
-                } else if (user && appInitialized) {
-                    console.log("Estado de auth confirmado, mas app já está inicializada. Não faz nada.");
-                } else if (!user) {
-                    appInitialized = false;
-                    console.log("Utilizador fez logout. Limpando a app.");
-                    currentUserId = null;
-                    loginScreen.classList.remove('escondido');
-                    appScreen.classList.add('escondido');
-                    unsubUtilizadores();
-                    unsubEntradas();
-                    localUtilizadoresCache = [];
-                    localEntradasCache = [];
-                    utilizadorSelecionadoId = null;
-                    if(listaUtilizadoresDiv) renderizarUtilizadores(); 
-                    if(welcomeMessage) showWelcomeScreen(); 
-                }
-            });
-            
-            async function handleLogin(e) {
-                e.preventDefault();
-                console.log("Tentativa de login...");
-                const email = document.getElementById('login-email').value;
-                const pass = document.getElementById('login-password').value;
-                mostrarErroLogin("");
-                 // Validação Mínima
-                 if (!email || !pass) return mostrarErroLogin("Preencha email e senha.");
-                try {
-                    await signInWithEmailAndPassword(auth, email, pass);
-                    console.log("Login bem-sucedido!");
-                } catch (error) { 
-                    console.error("Falha no login:", error.code);
-                    mostrarErroLogin("Email ou senha inválidos."); 
-                }
-            }
-
-            async function handleRegister(e) {
-                e.preventDefault();
-                console.log("Tentativa de registo...");
-                const email = document.getElementById('register-email').value;
-                const pass = document.getElementById('register-password').value;
-                mostrarErroLogin("");
-                // Validação Mínima
-                if (!email || !pass) return mostrarErroLogin("Preencha email e senha.");
-                if (pass.length < 6) return mostrarErroLogin("A senha deve ter pelo menos 6 caracteres.");
-                try {
-                    await createUserWithEmailAndPassword(auth, email, pass);
-                    console.log("Registo bem-sucedido!");
-                } catch (error) {
-                    console.error("Falha no registo:", error.code);
-                    if (error.code === 'auth/weak-password') mostrarErroLogin("A senha deve ter pelo menos 6 caracteres.");
-                    else if (error.code === 'auth/email-already-in-use') mostrarErroLogin("Este email já está em uso.");
-                    else mostrarErroLogin("Erro ao criar conta.");
-                }
-            }
-            
-            // --- LÓGICA PRINCIPAL DA APLICAÇÃO (Após Login) ---
-            
-            function setupAppListeners() {
-                if (!currentUserId || !db) {
-                     console.error("Não foi possível configurar listeners: userId ou db inválidos.");
-                     return;
-                }
-                console.log("Configurando listeners da aplicação (onSnapshots)...");
-                const utilizadoresCollectionPath = `/gestao-financeira/${currentUserId}/gestao_utilizadores`;
-                const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
-
-                unsubUtilizadores = onSnapshot(query(collection(db, utilizadoresCollectionPath)), (snapshot) => {
-                    localUtilizadoresCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    console.log("Recebido snapshot de Utilizadores:", localUtilizadoresCache.length, "itens");
-                    renderizarUtilizadores();
-                }, (error) => console.error("Erro ao ouvir utilizadores:", error));
-                
-                unsubEntradas = onSnapshot(query(collection(db, entradasCollectionPath)), (snapshot) => {
-                    localEntradasCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    console.log("Recebido snapshot de Entradas:", localEntradasCache.length, "itens");
-                    if (utilizadorSelecionadoId) renderizarAreaReceitas(utilizadorSelecionadoId);
-                }, (error) => console.error("Erro ao ouvir receitas:", error));
-                
-                // Anexar listeners a elementos da App principal aqui
-                 try {
-                    if (btnLogout) btnLogout.onclick = async () => { await signOut(auth); };
-                    if (logo) logo.onclick = showWelcomeScreen;
-                    if (formNovoUtilizador) formNovoUtilizador.onsubmit = adicionarUtilizador;
-                    if (formNovaEntrada) formNovaEntrada.onsubmit = adicionarNovaEntrada;
-                    if (listaEntradasDiv) listaEntradasDiv.onclick = handleEntradaClick;
-                    if (formPagamento) formPagamento.onsubmit = processarPagamento;
-                    if (btnCancelarModal) btnCancelarModal.onclick = () => modalPagamento.classList.add('escondido');
-                    if (btnMesAnterior) btnMesAnterior.onclick = () => mudarMes(-1);
-                    if (btnMesProximo) btnMesProximo.onclick = () => mudarMes(1);
-                    console.log("Listeners da app principal anexados.");
-                 } catch(e) {
-                     console.error("Erro ao anexar listeners da app principal:", e);
-                 }
-                
-                renderizarUtilizadores();
-                showWelcomeScreen();
-            }
-
-            // --- FUNÇÕES DE DADOS (Firestore) ---
-
-            async function adicionarUtilizador(event) {
-                event.preventDefault();
-                const nome = inputNomeUtilizador.value.trim();
-                const setor = inputSetorUtilizador.value.trim();
-                 // Validação Mínima (Exemplo: Apenas nome é obrigatório)
-                if (!nome || !currentUserId || !db) return alert('O campo Nome é obrigatório.');
-                try {
-                    const utilizadoresCollectionPath = `/gestao-financeira/${currentUserId}/gestao_utilizadores`;
-                    await addDoc(collection(db, utilizadoresCollectionPath), { nome, setor }); // Setor pode ser vazio
-                    formNovoUtilizador.reset();
-                } catch (error) { console.error("Erro ao adicionar utilizador:", error); }
-            }
-
-            async function adicionarNovaEntrada(event) {
-                event.preventDefault();
-                if (!utilizadorSelecionadoId || !currentUserId || !db) return alert("Erro: Nenhum utilizador selecionado ou problema de conexão.");
-                const titulo = inputTituloEntrada.value.trim();
-                const categoria = inputCategoriaEntrada.value.trim();
-                const valorStr = inputValorEntrada.value.replace(',', '.');
-                const valor = parseFloat(valorStr);
-                const obs = inputObsEntrada.value.trim();
-                
-                 // Validação Mínima (Exemplo: Título e Valor são obrigatórios)
-                if (!titulo || !valorStr || isNaN(valor) || valor <= 0) {
-                     return alert('Os campos Título e Valor total são obrigatórios e o valor deve ser positivo.');
-                }
-                
-                const dataDaReceita = new Date(dataVisaoAtual.getFullYear(), dataVisaoAtual.getMonth(), 2).toISOString();
-                
-                const novaEntrada = {
-                    titulo, 
-                    categoria: categoria || 'Sem Categoria', // Valor padrão
-                    valorTotal: valor, 
-                    valorRecebido: 0, 
-                    observacoes: obs, // Pode ser vazio
-                    dataCriacao: dataDaReceita,
-                    utilizadorId: utilizadorSelecionadoId
-                };
-                
-                try {
-                    const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
-                    await addDoc(collection(db, entradasCollectionPath), novaEntrada);
-                    formNovaEntrada.reset();
-                } catch (error) { console.error("Erro ao adicionar receita:", error); }
-            }
-
-            async function handleEntradaClick(event) {
-                 if (!currentUserId || !db) return;
-                const target = event.target;
-                const entradaDiv = target.closest('.entrada');
-                if (!entradaDiv) return;
-                const id = entradaDiv.dataset.id;
-                if (!id) return;
-                
-                const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
-                const docRef = doc(db, entradasCollectionPath, id);
-
-                if (target.classList.contains('btn-excluir')) {
-                    if (confirm('Tem a certeza de que deseja excluir esta receita?')) {
-                        try { await deleteDoc(docRef); } catch (error) { console.error("Erro ao excluir:", error); }
-                    }
-                } else if (target.classList.contains('btn-pago')) {
-                    const entrada = localEntradasCache.find(e => e.id === id);
-                    if (entrada) {
-                        tituloModalEl.textContent = entrada.titulo;
-                        idEntradaPagamentoInput.value = id;
-                        modalPagamento.classList.remove('escondido');
-                        valorPagamentoInput.focus();
-                    }
-                } else if (target.classList.contains('btn-editar')) {
-                    alert('Funcionalidade de Edição a ser implementada!');
-                }
-            }
-            
-            async function processarPagamento(event) {
-                event.preventDefault();
-                const id = idEntradaPagamentoInput.value;
-                const valorAdicionalStr = valorPagamentoInput.value.replace(',', '.');
-                const valorAdicional = parseFloat(valorAdicionalStr);
-                
-                // Validação Mínima
-                if (!id || !valorAdicionalStr || isNaN(valorAdicional) || valorAdicional <= 0 || !currentUserId || !db) {
-                    return alert('Por favor, insira um valor de pagamento válido.');
-                 }
-                
-                const entrada = localEntradasCache.find(e => e.id === id);
-                if (!entrada) return alert("Ocorreu um erro ao processar o pagamento.");
-
-                const valorRecebidoNum = Number(entrada.valorRecebido);
-                const valorTotalNum = Number(entrada.valorTotal);
-                const novoValorRecebido = valorRecebidoNum + valorAdicional;
-                
-                if (novoValorRecebido > (valorTotalNum + 0.001)) return alert('O valor recebido não pode ultrapassar o valor total da receita.');
-                
-                try {
-                    const entradasCollectionPath = `/gestao-financeira/${currentUserId}/gestao_receitas`;
-                    const docRef = doc(db, entradasCollectionPath, id);
-                    await updateDoc(docRef, { valorRecebido: novoValorRecebido });
-                    modalPagamento.classList.add('escondido');
-                    formPagamento.reset();
-                } catch (error) { console.error("Erro ao atualizar pagamento:", error); }
-            }
-
-            // --- FUNÇÕES DE RENDERIZAÇÃO (Leem do cache local) ---
-
-            function renderizarUtilizadores() {
-                if (!listaUtilizadoresDiv) { console.log("renderizarUtilizadores: listaUtilizadoresDiv não encontrado"); return; }
-                listaUtilizadoresDiv.innerHTML = '';
-                if (localUtilizadoresCache.length === 0) {
-                    listaUtilizadoresDiv.innerHTML = '<p>Nenhum utilizador registado.</p>';
-                    return;
-                }
-                localUtilizadoresCache.forEach(user => {
-                    const card = document.createElement('div');
-                    card.className = 'utilizador-card';
-                    card.dataset.id = user.id;
-                    card.innerHTML = `<h4>${user.nome}</h4><p>${user.setor || 'Sem Setor'}</p>`; // Exibe 'Sem Setor' se vazio
-                    if (user.id === utilizadorSelecionadoId) card.classList.add('utilizador-selecionado');
-                    card.addEventListener('click', () => selecionarUtilizador(user.id));
-                    listaUtilizadoresDiv.appendChild(card);
-                });
-            }
-            
-            function selecionarUtilizador(id) {
-                const utilizador = localUtilizadoresCache.find(u => u.id === id);
-                if (!utilizador || !welcomeMessage || !areaReceitasDiv || !tituloReceitasUtilizador) return;
-                utilizadorSelecionadoId = id;
-                
-                dataVisaoAtual = new Date(); 
-                
-                welcomeMessage.classList.add('escondido');
-                areaReceitasDiv.classList.remove('escondido');
-                tituloReceitasUtilizador.textContent = `Receitas de ${utilizador.nome}`;
-                renderizarUtilizadores(); 
-                renderizarNavegacaoMes();
-                renderizarAreaReceitas(id);
-            }
-            
-            function showWelcomeScreen() {
-                utilizadorSelecionadoId = null;
-                if(welcomeMessage) welcomeMessage.classList.remove('escondido');
-                if(areaReceitasDiv) areaReceitasDiv.classList.add('escondido');
-                renderizarUtilizadores(); 
-            }
-
-            function mudarMes(direcao) {
-                dataVisaoAtual.setMonth(dataVisaoAtual.getMonth() + direcao);
-                renderizarNavegacaoMes();
-                if (utilizadorSelecionadoId) renderizarAreaReceitas(utilizadorSelecionadoId);
-            }
-
-            function formatarDataVisao(data) {
-                 return data.toLocaleDateString('pt-BR', {
-                    month: 'long',
-                    year: 'numeric'
-                });
-            }
-            
-            function renderizarNavegacaoMes() {
-                 if (!mesAnoAtualEl || !formTituloReceita || !btnMesProximo) return;
-                const textoMesAno = formatarDataVisao(dataVisaoAtual);
-                mesAnoAtualEl.textContent = textoMesAno;
-                formTituloReceita.textContent = `Adicionar Receita para ${textoMesAno}`;
-                
-                // --- ALTERADO: Remover a desativação do botão "Próximo" ---
-                // const agora = new Date();
-                // agora.setDate(1);
-                // agora.setHours(0,0,0,0);
-                // let dataVisaoCopia = new Date(dataVisaoAtual);
-                // dataVisaoCopia.setDate(1);
-                // dataVisaoCopia.setHours(0,0,0,0);
-                // btnMesProximo.disabled = dataVisaoCopia >= agora;
-                btnMesProximo.disabled = false; // Sempre habilitado
-                // --- FIM DA ALTERAÇÃO ---
-            }
-            
-            function renderizarAreaReceitas(userId) {
-                if (!userId) return;
-                const mesSelecionado = dataVisaoAtual.getMonth() + 1;
-                const anoSelecionado = dataVisaoAtual.getFullYear();
-                
-                let entradasDoUtilizador = localEntradasCache.filter(e => e.utilizadorId === userId);
-                
-                let entradasFiltradas = entradasDoUtilizador.filter(e => {
-                    try {
-                        const data = new Date(e.dataCriacao);
-                        if (isNaN(data.getTime())) return false;
-                        const mesEntrada = data.getMonth() + 1;
-                        const anoEntrada = data.getFullYear();
-                        return mesEntrada === mesSelecionado && anoEntrada === anoSelecionado;
-                    } catch (error) { return false; }
-                });
-                atualizarSumario(entradasFiltradas);
-                renderizarListaEntradas(entradasFiltradas);
-            }
-            
-            function renderizarListaEntradas(lista) {
-                if (!listaEntradasDiv) return;
-                listaEntradasDiv.innerHTML = '';
-                if (lista.length === 0) {
-                    listaEntradasDiv.innerHTML = '<p>Nenhuma receita encontrada para este mês.</p>';
-                    return;
-                }
-                lista.sort((a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao));
-                lista.forEach(entrada => {
-                    const entradaDiv = document.createElement('div');
-                    entradaDiv.classList.add('entrada');
-                    entradaDiv.dataset.id = entrada.id;
-                    const valorRestante = Number(entrada.valorTotal) - Number(entrada.valorRecebido);
-                    entradaDiv.innerHTML = `
-                        <div class="entrada-categoria">${entrada.categoria || 'Sem Categoria'}</div>
-                        <div class="entrada-header">
-                            <span>${entrada.titulo}</span>
-                            <span>${formatarMoeda(entrada.valorTotal)}</span>
-                        </div>
-                        <div class="entrada-valores">
-                            <span><strong>Recebido:</strong> ${formatarMoeda(entrada.valorRecebido)}</span>
-                            <span><strong>Restante:</strong> ${formatarMoeda(valorRestante)}</span>
-                        </div>
-                        ${entrada.observacoes ? `<div class="entrada-obs"><strong>Obs:</strong> ${entrada.observacoes}</div>` : ''}
-                        <div class="entrada-botoes">
-                            <button class="btn-pago">Adicionar Pagamento</button>
-                            <button class="btn-editar">Editar</button>
-                            <button class="btn-excluir">Excluir</button>
-                        </div>
-                    `;
-                    listaEntradasDiv.appendChild(entradaDiv);
-                });
-            }
-            
-            function atualizarSumario(lista) {
-                 if (!totalAReceberEl || !totalRecebidoEl || !saldoRestanteEl) return;
-                const totalAReceber = lista.reduce((acc, e) => acc + Number(e.valorTotal), 0);
-                const totalRecebido = lista.reduce((acc, e) => acc + Number(e.valorRecebido), 0);
-                const saldoRestante = totalAReceber - totalRecebido;
-                totalAReceberEl.textContent = formatarMoeda(totalAReceber);
-                totalRecebidoEl.textContent = formatarMoeda(totalRecebido);
-                saldoRestanteEl.textContent = formatarMoeda(saldoRestante);
-            }
-        
-        }); // --- Fim do DOMContentLoaded ---
-    </script>
-</body>
-</html>
+                  
