@@ -18,37 +18,34 @@
             --texto-corpo: #444;
             --texto-claro: #777;
             --fundo-branco: #fff;
-            --fundo-app: rgba(255, 255, 255, 0.8);
+            --fundo-app: rgba(255, 255, 255, 0.95);
             --sombra: 0 4px 10px rgba(0,0,0,0.08);
             --cor-erro: #c0392b;
             --cor-sucesso: #27ae60;
         }
 
-        /* --- Estilos de Scroll --- */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: var(--fundo-claro); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background-color: var(--cor-gradiente-clara); border-radius: 10px; border: 2px solid var(--fundo-claro); }
-        ::-webkit-scrollbar-thumb:hover { background-color: var(--cor-secundaria); }
-        * { scrollbar-width: thin; scrollbar-color: var(--cor-gradiente-clara) var(--fundo-claro); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--fundo-claro); }
+        ::-webkit-scrollbar-thumb { background-color: var(--cor-gradiente-clara); border-radius: 10px; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             min-height: 100vh;
-            background: linear-gradient(to bottom, var(--cor-primaria), var(--fundo-branco) 40%);
-            background-repeat: no-repeat;
+            background: linear-gradient(to bottom, var(--cor-primaria), #fff 60%);
+            background-attachment: fixed;
             color: var(--texto-corpo);
-            overflow-x: hidden;
         }
         
-        /* --- TELA DE LOGIN --- */
+        /* --- TELAS --- */
+        .escondido { display: none !important; }
+
         #login-screen {
             display: flex;
             align-items: center;
             justify-content: center;
             height: 100vh;
             padding: 20px;
-            box-sizing: border-box;
         }
         
         .login-box {
@@ -56,259 +53,238 @@
             max-width: 400px;
             padding: 30px;
             background: var(--fundo-branco);
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             text-align: center;
         }
         
-        .login-box h2 { color: var(--texto-titulo); border: none; margin-top: 0; }
-        .login-box img { max-width: 120px; margin-bottom: 20px; }
-        #login-form, #register-form { display: flex; flex-direction: column; gap: 15px; }
-        #register-form.escondido, #login-form.escondido { display: none; }
-        #login-form button, #register-form button { width: 100%; }
-        #login-error, #register-error { color: var(--cor-erro); font-size: 0.9rem; min-height: 1.2em; }
-        .toggle-form { color: var(--cor-secundaria); text-decoration: underline; cursor: pointer; font-size: 0.9rem; margin-top: 15px; }
+        .login-box img { max-width: 150px; margin-bottom: 20px; }
+        .login-box h2 { color: var(--texto-titulo); margin-bottom: 20px; border: none; }
 
-        /* --- ESTRUTURA DA APP --- */
-        .app-layout { display: grid; grid-template-columns: 1fr; height: 100vh; }
+        /* --- DASHBOARD --- */
+        .app-layout { display: grid; grid-template-columns: 1fr; min-height: 100vh; }
 
         .sidebar {
             background-color: var(--fundo-claro);
             padding: 25px;
-            height: auto;
-            overflow-y: visible;
-            box-sizing: border-box;
             border-right: 1px solid var(--borda-clara);
-            position: relative;
-            top: 0;
         }
 
-        .sidebar header { text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid var(--borda-clara); }
-        #logo { max-width: 150px; height: auto; cursor: pointer; }
-        .sidebar-section { margin-bottom: 30px; }
-        .sidebar-section h3 { color: var(--texto-titulo); border-bottom: 2px solid var(--cor-gradiente-clara); padding-bottom: 8px; margin-top: 0; }
-        #btn-logout { background-color: var(--texto-claro); margin-top: 20px; }
-        #btn-logout:hover { background-color: var(--cor-erro); }
+        .sidebar header { text-align: center; margin-bottom: 20px; }
+        .sidebar header img { max-width: 120px; }
 
-        .main-content {
-            padding: 20px;
-            overflow-y: auto;
-            height: auto;
-            box-sizing: border-box;
-            background-color: var(--fundo-app);
-            backdrop-filter: blur(10px);
+        .main-content { padding: 20px; background-color: var(--fundo-app); }
+
+        .form-container { 
+            padding: 20px; 
+            background-color: var(--fundo-branco); 
+            border-radius: 10px; 
+            border: 1px solid var(--borda-clara); 
+            margin-bottom: 25px; 
+            box-shadow: var(--sombra);
         }
 
-        #welcome-message { text-align: center; padding: 40px 20px; color: var(--texto-claro); }
-        #welcome-message h2 { color: var(--texto-titulo); border: none; }
+        input, textarea, select { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 12px; 
+            border: 1px solid var(--borda-inputs); 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 1rem;
+        }
 
-        .form-container { padding: 20px; background-color: var(--fundo-branco); border-radius: 8px; border: 1px solid var(--borda-clara); margin-bottom: 20px; }
-        input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea, select { width: 100%; padding: 12px; border: 1px solid var(--borda-inputs); border-radius: 6px; font-size: 1rem; box-sizing: border-box; margin-bottom: 10px; }
-        button { padding: 12px 20px; background-color: var(--cor-secundaria); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background-color 0.3s; width: 100%; }
+        button { 
+            padding: 12px 20px; 
+            background-color: var(--cor-secundaria); 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            width: 100%;
+            transition: 0.3s;
+        }
         button:hover { background-color: var(--cor-primaria); }
 
-        .lista-vertical-utilizadores { display: flex; flex-direction: column; gap: 15px; }
-        .utilizador-card { background-color: var(--fundo-branco); padding: 15px 20px; border-radius: 8px; box-shadow: var(--sombra); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border-left: 5px solid var(--cor-gradiente-clara); }
-        .utilizador-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.12); }
-        .utilizador-card.utilizador-selecionado { border-left-color: var(--cor-primaria); box-shadow: 0 6px 15px rgba(255, 123, 0, 0.4); }
-        .utilizador-card h4 { margin: 0 0 5px 0; color: #333; }
-        .utilizador-card p { margin: 0; color: var(--texto-claro); font-size: 0.9rem; }
+        /* --- CARDS E HISTÓRICO --- */
+        .utilizador-card { 
+            background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 10px; 
+            cursor: pointer; border-left: 5px solid var(--cor-gradiente-clara); box-shadow: var(--sombra);
+        }
+        .utilizador-card.selecionado { border-left-color: var(--cor-primaria); background: #fffcf9; }
 
-        #area-receitas h2 { color: var(--texto-titulo); border-bottom: 2px solid var(--cor-gradiente-clara); padding-bottom: 10px; margin-top: 0; }
-        .sumario { display: flex; flex-direction: column; gap: 15px; background-image: linear-gradient(to right, var(--cor-secundaria), var(--texto-titulo)); color: white; padding: 20px; border-radius: 8px; margin: 20px 0 30px 0; text-align: center; }
-        .sumario-item h3 { margin: 0 0 10px; font-size: 1rem; color: #fff5ee; border: none; font-weight: normal; }
-        .sumario-item p { margin: 0; font-size: 1.5rem; font-weight: bold; }
-        
-        .navegacao-mes {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: var(--fundo-claro);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        .entrada { 
+            background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 15px; 
+            position: relative; border: 1px solid #eee; box-shadow: var(--sombra);
         }
-        .navegacao-mes h3 { color: var(--texto-titulo); border: none; padding: 0; margin: 0; font-size: 1.2rem; text-transform: capitalize; }
-        .navegacao-mes button { width: 50px; font-size: 1.5rem; padding: 5px; }
-        
-        /* --- Cards de Receita --- */
-        .entrada { background-color: var(--fundo-branco); border: 1px solid #eee; border-left: 5px solid var(--cor-gradiente-clara); padding: 20px; margin-bottom: 15px; border-radius: 5px; position: relative; box-shadow: var(--sombra); }
-        .entrada-categoria { position: absolute; top: -1px; right: -1px; background-color: var(--texto-titulo); color: white; padding: 4px 12px; font-size: 0.8rem; font-weight: bold; border-top-right-radius: 5px; border-bottom-left-radius: 10px; }
-        .entrada-header { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; }
-        .entrada-header span:last-child { font-size: 1.1rem; color: var(--cor-secundaria); }
-        .entrada-valores { display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: #555; margin-bottom: 15px; }
-        .entrada-obs { font-style: italic; color: var(--texto-claro); background-color: var(--fundo-claro); padding: 10px; border-radius: 4px; margin-bottom: 15px; word-wrap: break-word; font-size: 0.9rem; border-left: 3px solid var(--cor-gradiente-clara); }
-        
-        /* --- Histórico de Pagamentos --- */
-        .historico-container {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px dashed var(--borda-inputs);
+        .entrada-categoria { 
+            position: absolute; top: 0; right: 0; background: var(--texto-titulo); 
+            color: #fff; padding: 4px 12px; font-size: 0.75rem; border-radius: 0 10px 0 10px;
         }
-        .historico-titulo { font-size: 0.85rem; font-weight: bold; color: var(--texto-titulo); margin-bottom: 8px; display: block; }
+
+        .sumario { 
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; 
+            background: linear-gradient(135deg, var(--cor-secundaria), var(--cor-primaria));
+            color: #fff; padding: 20px; border-radius: 12px; margin-bottom: 25px; text-align: center;
+        }
+        .sumario h3 { font-size: 0.8rem; opacity: 0.9; margin: 0; }
+        .sumario p { font-size: 1.2rem; font-weight: bold; margin: 5px 0 0 0; }
+
+        .navegacao-mes { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 20px; background: #fff; padding: 10px; border-radius: 10px;
+        }
+        .navegacao-mes button { width: auto; padding: 5px 15px; }
+
+        /* HISTÓRICO */
+        .historico-lista { margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 10px; }
         .pagamento-item {
-            background: var(--fundo-claro);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            margin-bottom: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: help;
-            position: relative;
-            border: 1px solid transparent;
-            transition: all 0.2s;
+            display: flex; justify-content: space-between; padding: 8px;
+            background: #fdfdfd; border: 1px solid #f0f0f0; border-radius: 5px; margin-bottom: 5px;
+            cursor: help; position: relative; font-size: 0.9rem;
         }
-        .pagamento-item:hover { border-color: var(--cor-secundaria); background: #fff; }
-        .pagamento-item .valor-pago { font-weight: bold; color: var(--cor-sucesso); }
+        .pagamento-item:hover { background: #fff5ee; border-color: var(--cor-secundaria); }
         
-        /* Tooltip Simples */
-        .pagamento-item:hover::after {
-            content: attr(data-obs);
-            position: absolute;
-            bottom: 110%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 6px;
-            width: 200px;
-            font-size: 0.75rem;
-            z-index: 10;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            pointer-events: none;
-            white-space: normal;
+        /* Tooltip */
+        .pagamento-item .tooltip {
+            visibility: hidden; width: 180px; background-color: #333; color: #fff;
+            text-align: center; border-radius: 6px; padding: 8px; position: absolute;
+            z-index: 10; bottom: 125%; left: 50%; margin-left: -90px; opacity: 0; transition: opacity 0.3s;
+            font-size: 0.75rem; pointer-events: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
+        .pagamento-item:hover .tooltip { visibility: visible; opacity: 1; }
 
-        .entrada-botoes { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-        .entrada-botoes button { width: 100%; font-size: 0.8rem; padding: 8px 12px; }
+        .btn-pago { background-color: var(--cor-sucesso); margin-top: 10px; }
+        .btn-excluir { background-color: #95a5a6; margin-top: 5px; font-size: 0.8rem; }
 
-        /* Modal */
-        .modal-container {position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000;}
-        .modal {background-color: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 450px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
-        .modal-botoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
-        .modal-botoes button { width: auto; }
-        #btn-cancelar-modal { background-color: #95a5a6; }
-        .btn-pago { background-color: var(--cor-sucesso); }
-        .btn-excluir { background-color: var(--cor-erro); }
-        
-        .escondido { display: none !important; }
-        
-        @media (min-width: 769px) {
-            body { overflow: hidden; }
-            .app-layout { grid-template-columns: 320px 1fr; }
-            .sidebar { height: 100vh; overflow-y: auto; position: sticky; }
-            .main-content { padding: 40px; overflow-y: auto; height: 100vh; }
-            .sumario { flex-direction: row; gap: 0; }
-            .entrada-header { flex-direction: row; justify-content: space-between; align-items: center; }
-            .entrada-valores { flex-direction: row; gap: 20px; }
-            .entrada-botoes { flex-direction: row; gap: 10px; }
-            .entrada-botoes button { width: auto; }
+        /* MODAL */
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal-content { background: #fff; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; }
+
+        @media (min-width: 768px) {
+            .app-layout { grid-template-columns: 300px 1fr; }
+            .sidebar { height: 100vh; position: sticky; top: 0; overflow-y: auto; }
+            .main-content { height: 100vh; overflow-y: auto; }
         }
     </style>
 </head>
 <body>
 
     <!-- TELA DE LOGIN -->
-    <div id="login-screen">
+    <div id="screen-login">
         <div class="login-box">
-            <img src="imagens/speedlogo.png" alt="Logótipo" onerror="this.alt='Logótipo'; this.style.color='var(--texto-claro)'; this.style.border='1px solid var(--borda-clara)'; this.style.padding='10px';">
-            <form id="login-form">
-                <h2>Entrar</h2>
-                <input type="email" id="login-email" placeholder="Email">
-                <input type="password" id="login-password" placeholder="Senha">
-                <p id="login-error"></p>
-                <button type="submit">Login</button>
-                <div class="toggle-form" id="show-register">Não tem conta? Crie uma agora</div>
-            </form>
-            <form id="register-form" class="escondido">
-                <h2>Criar Conta</h2>
-                <input type="email" id="register-email" placeholder="Email">
-                <input type="password" id="register-password" placeholder="Senha (mínimo 6 caracteres)">
-                <p id="register-error"></p>
-                <button type="submit">Registar</button>
-                <div class="toggle-form" id="show-login">Já tem conta? Entrar</div>
-            </form>
+            <img src="imagens/speedlogo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/150x50?text=SpeedNet'">
+            <div id="auth-forms">
+                <form id="form-login">
+                    <h2>Entrar</h2>
+                    <input type="email" id="login-email" placeholder="Seu e-mail">
+                    <input type="password" id="login-password" placeholder="Sua senha">
+                    <button type="submit">Acessar Sistema</button>
+                    <p style="margin-top:15px; font-size:0.8rem;">Não tem conta? <a href="#" id="go-to-register" style="color:var(--cor-secundaria)">Criar conta</a></p>
+                </form>
+
+                <form id="form-register" class="escondido">
+                    <h2>Criar Nova Conta</h2>
+                    <input type="email" id="reg-email" placeholder="E-mail">
+                    <input type="password" id="reg-password" placeholder="Senha (mínimo 6 caracteres)">
+                    <button type="submit">Cadastrar</button>
+                    <p style="margin-top:15px; font-size:0.8rem;">Já tem conta? <a href="#" id="go-to-login" style="color:var(--cor-secundaria)">Fazer Login</a></p>
+                </form>
+                <p id="auth-msg" style="color:red; font-size:0.8rem; margin-top:10px;"></p>
+            </div>
         </div>
     </div>
 
-    <!-- APLICAÇÃO PRINCIPAL -->
-    <div id="app-screen" class="app-layout escondido">
+    <!-- APP PRINCIPAL -->
+    <div id="screen-app" class="app-layout escondido">
         <aside class="sidebar">
-            <header><img src="imagens/speedlogo.png" alt="Logótipo" id="logo" onerror="this.alt='Logótipo';"></header>
-            <div class="sidebar-section">
-                <form id="form-novo-utilizador" class="form-container">
-                    <h3>Adicionar Utilizador</h3>
-                    <input type="text" id="nome-utilizador" placeholder="Nome completo">
-                    <input type="text" id="setor-utilizador" placeholder="Setor">
-                    <button type="submit">Adicionar</button>
+            <header>
+                <img src="imagens/speedlogo.png" alt="Logo" onclick="location.reload()" style="cursor:pointer">
+            </header>
+            
+            <div class="form-container">
+                <h4 style="margin-top:0; color:var(--texto-titulo)">Novo Colaborador</h4>
+                <form id="form-user">
+                    <input type="text" id="user-name" placeholder="Nome do colaborador">
+                    <input type="text" id="user-setor" placeholder="Setor/Cargo">
+                    <button type="submit">Salvar</button>
                 </form>
             </div>
-            <div class="sidebar-section">
-                <h3>Utilizadores</h3>
-                <div id="lista-utilizadores" class="lista-vertical-utilizadores"></div>
+
+            <div id="list-users">
+                <!-- JS -->
             </div>
-            <button id="btn-logout">Sair</button>
+
+            <button id="btn-logout" style="background:#666; margin-top:30px;">Sair do Sistema</button>
         </aside>
 
         <main class="main-content">
-            <div id="welcome-message">
+            <div id="empty-state" style="text-align:center; padding-top:100px; color:#999;">
                 <h2>Bem-vindo!</h2>
-                <p>Selecione um utilizador à esquerda para gerir as finanças.</p>
+                <p>Selecione um colaborador na barra lateral para ver as receitas.</p>
             </div>
 
-            <div id="area-receitas" class="escondido">
-                <h2 id="titulo-receitas-utilizador"></h2>
+            <div id="dashboard-content" class="escondido">
+                <h2 id="view-title" style="color:var(--texto-titulo); border-bottom:2px solid var(--cor-gradiente-clara); padding-bottom:10px;"></h2>
+                
                 <div class="navegacao-mes">
-                    <button id="btn-mes-anterior">&lt;</button>
-                    <h3 id="mes-ano-atual">...</h3>
-                    <button id="btn-mes-proximo">&gt;</button>
+                    <button id="prev-month">&lt; Anterior</button>
+                    <h3 id="current-month-display" style="margin:0; text-transform: capitalize;"></h3>
+                    <button id="next-month">Próximo &gt;</button>
                 </div>
+
                 <div class="sumario">
-                    <div class="sumario-item"><h3>Total a Receber</h3><p id="total-a-receber">R$ 0,00</p></div>
-                    <div class="sumario-item"><h3>Total Recebido</h3><p id="total-recebido">R$ 0,00</p></div>
-                    <div class="sumario-item"><h3>Saldo Restante</h3><p id="saldo-restante">R$ 0,00</p></div>
+                    <div><h3>Total</h3><p id="sum-total">R$ 0,00</p></div>
+                    <div><h3>Recebido</h3><p id="sum-rec">R$ 0,00</p></div>
+                    <div><h3>Restante</h3><p id="sum-rest">R$ 0,00</p></div>
                 </div>
+
                 <div class="form-container">
-                    <h3 id="form-titulo-receita">Adicionar Nova Receita</h3>
-                    <form id="form-nova-entrada">
-                        <input type="text" id="titulo-entrada" placeholder="Título (ex: Salário Março)">
-                        <input type="text" id="categoria-entrada" placeholder="Categoria">
-                        <input type="number" id="valor-entrada" placeholder="Valor Total" step="0.01">
-                        <textarea id="obs-entrada" placeholder="Observações iniciais"></textarea>
-                        <button type="submit">Adicionar Receita</button>
+                    <h4 style="margin-top:0; color:var(--texto-titulo)">Adicionar Receita / Salário</h4>
+                    <form id="form-receita">
+                        <input type="text" id="rec-title" placeholder="Título (ex: Salário Base)">
+                        <input type="text" id="rec-cat" placeholder="Categoria (ex: Extra, Vendas)">
+                        <input type="number" id="rec-val" placeholder="Valor Total (R$)" step="0.01">
+                        <textarea id="rec-obs" placeholder="Observações (opcional)"></textarea>
+                        <button type="submit">Registrar Receita</button>
                     </form>
                 </div>
-                <h3>Receitas Registadas</h3>
-                <div id="lista-entradas"></div>
+
+                <div id="list-receitas">
+                    <!-- JS -->
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- MODAL DE PAGAMENTO (ATUALIZADO) -->
-    <div id="modal-pagamento" class="modal-container escondido">
-        <div class="modal">
-            <h3>Confirmar Recebimento</h3>
-            <form id="form-pagamento">
-                <p>Adicionar valor para: <strong id="titulo-modal"></strong></p>
-                <input type="hidden" id="id-entrada-pagamento">
-                <input type="number" id="valor-pagamento" placeholder="Valor recebido hoje (R$)" step="0.01">
-                <textarea id="obs-pagamento" placeholder="Ex: Recebi em PIX / Dinheiro em mãos (Data: 23/03)"></textarea>
-                <div class="modal-botoes">
-                    <button type="submit" class="btn-pago">Confirmar Pagamento</button>
-                    <button type="button" id="btn-cancelar-modal">Cancelar</button>
-                </div>
-            </form>
+    <!-- MODAL PAGAMENTO -->
+    <div id="modal-pg" class="modal-overlay escondido">
+        <div class="modal-content">
+            <h3 id="modal-title" style="margin-top:0; color:var(--texto-titulo)">Adicionar Pagamento</h3>
+            <input type="hidden" id="modal-id">
+            <p style="font-size:0.9rem;">Quanto foi recebido?</p>
+            <input type="number" id="modal-val" placeholder="Valor (R$)" step="0.01">
+            <textarea id="modal-obs" placeholder="Obs: Data, via PIX, Espécie..."></textarea>
+            <div style="display:flex; gap:10px;">
+                <button id="btn-confirm-pg" style="background:var(--cor-sucesso)">Confirmar</button>
+                <button id="btn-close-modal" style="background:#95a5a6">Cancelar</button>
+            </div>
         </div>
     </div>
-    
+
+    <!-- FIREBASE SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, collection, addDoc, updateDoc, deleteDoc, onSnapshot, query, setLogLevel } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, collection, addDoc, updateDoc, deleteDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+        console.log("Iniciando script do Firebase...");
+
+        // CONFIGURAÇÃO DO USUÁRIO
         const firebaseConfig = {
             apiKey: "AIzaSyAJH2S6l3UkeaJx3mDwNdWLwQau7az8R40",
             authDomain: "controle-paloma.firebaseapp.com",
@@ -319,57 +295,287 @@
             measurementId: "G-GN3KDTH1BX"
         };
 
-        let appInitialized = false;
-        
-        document.addEventListener('DOMContentLoaded', async () => {
-            const loginScreen = document.getElementById('login-screen');
-            const appScreen = document.getElementById('app-screen');
-            const loginForm = document.getElementById('login-form');
-            const registerForm = document.getElementById('register-form');
-            const loginErrorEl = document.getElementById('login-error');
-            const registerErrorEl = document.getElementById('register-error');
+        // INICIALIZAÇÃO
+        let app, auth, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            console.log("Firebase inicializado com sucesso.");
+        } catch (error) {
+            console.error("Erro na inicialização do Firebase:", error);
+        }
 
-            let app, auth, db;
+        // ESTADO
+        let userLogado = null;
+        let selectedColabId = null;
+        let dataVisao = new Date();
+        let cacheUsers = [];
+        let cacheRecs = [];
+
+        // ELEMENTOS
+        const dom = {
+            loginScreen: document.getElementById('screen-login'),
+            appScreen: document.getElementById('screen-app'),
+            authMsg: document.getElementById('auth-msg'),
+            listUsers: document.getElementById('list-users'),
+            listRecs: document.getElementById('list-receitas'),
+            dashContent: document.getElementById('dashboard-content'),
+            emptyState: document.getElementById('empty-state')
+        };
+
+        // --- AUTH FLOW ---
+        async function initAuth() {
             try {
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
                 await setPersistence(auth, browserLocalPersistence);
-            } catch (error) { console.error(error); return; }
-
-            // Listeners de Login/Toggle
-            document.getElementById('show-register').onclick = () => { loginForm.classList.add('escondido'); registerForm.classList.remove('escondido'); };
-            document.getElementById('show-login').onclick = () => { registerForm.classList.add('escondido'); loginForm.classList.remove('escondido'); };
-            loginForm.onsubmit = async (e) => {
-                e.preventDefault();
-                try { await signInWithEmailAndPassword(auth, loginForm["login-email"].value, loginForm["login-password"].value); }
-                catch (err) { loginErrorEl.textContent = "Erro ao entrar."; }
-            };
-            registerForm.onsubmit = async (e) => {
-                e.preventDefault();
-                try { await createUserWithEmailAndPassword(auth, registerForm["register-email"].value, registerForm["register-password"].value); }
-                catch (err) { registerErrorEl.textContent = "Erro ao criar conta."; }
-            };
-
-            // Estado Global
-            let currentUserId = null;
-            let utilizadorSelecionadoId = null;
-            let dataVisaoAtual = new Date(); 
-            let localUtilizadoresCache = [];
-            let localEntradasCache = [];
-            let unsubUtilizadores = () => {};
-            let unsubEntradas = () => {};
-
-            // Seletores App
-            const listaUtilizadoresDiv = document.getElementById('lista-utilizadores');
-            const areaReceitasDiv = document.getElementById('area-receitas');
-            const welcomeMessage = document.getElementById('welcome-message');
-            const listaEntradasDiv = document.getElementById('lista-entradas');
-            const modalPagamento = document.getElementById('modal-pagamento');
-            const totalAReceberEl = document.getElementById('total-a-receber');
-            const totalRecebidoEl = document.getElementById('total-recebido');
-            const saldoRestanteEl = document.getElementById('saldo-restante');
+                console.log("Persistência configurada.");
+            } catch (error) {
+                console.error("Erro na persistência:", error);
+            }
 
             onAuthStateChanged(auth, (user) => {
-                if (user && !appInitialized) {
-                  
+                console.log("Estado de autenticação mudou:", user ? "Logado" : "Deslogado");
+                if (user) {
+                    userLogado = user;
+                    dom.loginScreen.classList.add('escondido');
+                    dom.appScreen.classList.remove('escondido');
+                    startListeners();
+                } else {
+                    userLogado = null;
+                    dom.loginScreen.classList.remove('escondido');
+                    dom.appScreen.classList.add('escondido');
+                }
+            });
+        }
+
+        initAuth();
+
+        // Alternar telas de login/registro
+        document.getElementById('go-to-register').onclick = (e) => { 
+            e.preventDefault();
+            document.getElementById('form-login').classList.add('escondido'); 
+            document.getElementById('form-register').classList.remove('escondido'); 
+        };
+        document.getElementById('go-to-login').onclick = (e) => { 
+            e.preventDefault();
+            document.getElementById('form-register').classList.add('escondido'); 
+            document.getElementById('form-login').classList.remove('escondido'); 
+        };
+
+        document.getElementById('form-login').onsubmit = async (e) => {
+            e.preventDefault();
+            console.log("Tentando login...");
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+            dom.authMsg.textContent = "Carregando...";
+            try { 
+                const credential = await signInWithEmailAndPassword(auth, email, pass); 
+                console.log("Login realizado:", credential.user.email);
+            } catch (err) { 
+                console.error("Erro no login:", err);
+                dom.authMsg.textContent = "Erro: " + err.message; 
+            }
+        };
+
+        document.getElementById('form-register').onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-password').value;
+            dom.authMsg.textContent = "Cadastrando...";
+            try { 
+                await createUserWithEmailAndPassword(auth, email, pass); 
+            } catch (err) { 
+                console.error("Erro no cadastro:", err);
+                dom.authMsg.textContent = "Erro no cadastro. Verifique a senha."; 
+            }
+        };
+
+        document.getElementById('btn-logout').onclick = () => signOut(auth);
+
+        // --- DATA FLOW ---
+        function startListeners() {
+            console.log("Iniciando listeners de dados para o utilizador:", userLogado.uid);
+            const pathUsers = `/gestao-financeira/${userLogado.uid}/colaboradores`;
+            const pathRecs = `/gestao-financeira/${userLogado.uid}/receitas`;
+
+            onSnapshot(collection(db, pathUsers), (snap) => {
+                cacheUsers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderUsers();
+            }, (err) => console.error("Erro no snapshot de colaboradores:", err));
+
+            onSnapshot(collection(db, pathRecs), (snap) => {
+                cacheRecs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (selectedColabId) renderDashboard();
+            }, (err) => console.error("Erro no snapshot de receitas:", err));
+        }
+
+        // SALVAR COLABORADOR
+        document.getElementById('form-user').onsubmit = async (e) => {
+            e.preventDefault();
+            const nome = document.getElementById('user-name').value;
+            const setor = document.getElementById('user-setor').value;
+            if(!nome) return alert("Digite ao menos o nome.");
+            try {
+                await addDoc(collection(db, `/gestao-financeira/${userLogado.uid}/colaboradores`), { nome, setor });
+                e.target.reset();
+            } catch (err) {
+                console.error("Erro ao salvar colaborador:", err);
+            }
+        };
+
+        // SALVAR RECEITA
+        document.getElementById('form-receita').onsubmit = async (e) => {
+            e.preventDefault();
+            const tit = document.getElementById('rec-title').value;
+            const val = parseFloat(document.getElementById('rec-val').value);
+            if(!tit || isNaN(val)) return alert("Título e valor são necessários.");
+
+            const dataCriacao = new Date(dataVisao.getFullYear(), dataVisao.getMonth(), 10).toISOString();
+
+            try {
+                await addDoc(collection(db, `/gestao-financeira/${userLogado.uid}/receitas`), {
+                    colabId: selectedColabId,
+                    titulo: tit,
+                    categoria: document.getElementById('rec-cat').value || "Geral",
+                    valorTotal: val,
+                    observacoes: document.getElementById('rec-obs').value,
+                    dataRef: dataCriacao,
+                    pagamentos: []
+                });
+                e.target.reset();
+            } catch (err) {
+                console.error("Erro ao salvar receita:", err);
+            }
+        };
+
+        // --- RENDERIZAÇÃO ---
+        function renderUsers() {
+            dom.listUsers.innerHTML = '';
+            cacheUsers.forEach(u => {
+                const div = document.createElement('div');
+                div.className = `utilizador-card ${u.id === selectedColabId ? 'selecionado' : ''}`;
+                div.innerHTML = `<strong>${u.nome}</strong><br><small>${u.setor || ''}</small>`;
+                div.onclick = () => {
+                    selectedColabId = u.id;
+                    dom.emptyState.classList.add('escondido');
+                    dom.dashContent.classList.remove('escondido');
+                    document.getElementById('view-title').textContent = `Finanças: ${u.nome}`;
+                    renderUsers();
+                    renderDashboard();
+                };
+                dom.listUsers.appendChild(div);
+            });
+        }
+
+        function renderDashboard() {
+            const mes = dataVisao.getMonth();
+            const ano = dataVisao.getFullYear();
+            document.getElementById('current-month-display').textContent = dataVisao.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+            const filtradas = cacheRecs.filter(r => {
+                const d = new Date(r.dataRef);
+                return r.colabId === selectedColabId && d.getMonth() === mes && d.getFullYear() === ano;
+            });
+
+            let total = 0, recebido = 0;
+            dom.listRecs.innerHTML = filtradas.length ? '' : '<p style="text-align:center;color:#999">Nenhuma receita este mês.</p>';
+
+            filtradas.sort((a,b) => b.dataRef.localeCompare(a.dataRef)).forEach(r => {
+                const somaPg = (r.pagamentos || []).reduce((acc, p) => acc + p.valor, 0);
+                total += r.valorTotal;
+                recebido += somaPg;
+
+                const div = document.createElement('div');
+                div.className = 'entrada';
+                
+                let histHtml = '';
+                if(r.pagamentos && r.pagamentos.length > 0) {
+                    histHtml = `<div class="historico-lista">
+                        <small>Histórico de Recebimentos:</small>
+                        ${r.pagamentos.map(p => `
+                            <div class="pagamento-item">
+                                <span>${p.data}</span>
+                                <span style="color:var(--cor-sucesso); font-weight:bold">+ R$ ${p.valor.toFixed(2)}</span>
+                                <span class="tooltip">${p.obs || 'Sem observação'}</span>
+                            </div>
+                        `).join('')}
+                    </div>`;
+                }
+
+                div.innerHTML = `
+                    <div class="entrada-categoria">${r.categoria}</div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <strong>${r.titulo}</strong>
+                        <strong style="color:var(--cor-secundaria)">R$ ${r.valorTotal.toFixed(2)}</strong>
+                    </div>
+                    <div style="font-size:0.85rem; color:#666;">
+                        Recebido: R$ ${somaPg.toFixed(2)} | Restante: R$ ${(r.valorTotal - somaPg).toFixed(2)}
+                    </div>
+                    ${r.observacoes ? `<p style="font-size:0.8rem; background:#f9f9f9; padding:5px; margin:10px 0;">${r.observacoes}</p>` : ''}
+                    ${histHtml}
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-pago" onclick="window.abrirModal('${r.id}', '${r.titulo}')">Add Pagamento</button>
+                        <button class="btn-excluir" onclick="window.excluirRec('${r.id}')">Excluir</button>
+                    </div>
+                `;
+                dom.listRecs.appendChild(div);
+            });
+
+            document.getElementById('sum-total').textContent = `R$ ${total.toFixed(2)}`;
+            document.getElementById('sum-rec').textContent = `R$ ${recebido.toFixed(2)}`;
+            document.getElementById('sum-rest').textContent = `R$ ${(total - recebido).toFixed(2)}`;
+        }
+
+        // --- FUNÇÕES GLOBAIS ---
+        window.abrirModal = (id, titulo) => {
+            document.getElementById('modal-id').value = id;
+            document.getElementById('modal-title').textContent = `Pagamento: ${titulo}`;
+            document.getElementById('modal-pg').classList.remove('escondido');
+        };
+
+        document.getElementById('btn-close-modal').onclick = () => document.getElementById('modal-pg').classList.add('escondido');
+
+        document.getElementById('btn-confirm-pg').onclick = async () => {
+            const id = document.getElementById('modal-id').value;
+            const val = parseFloat(document.getElementById('modal-val').value);
+            const obs = document.getElementById('modal-obs').value;
+
+            if(isNaN(val) || val <= 0) return alert("Digite um valor válido.");
+
+            const rec = cacheRecs.find(r => r.id === id);
+            const novosPgs = [...(rec.pagamentos || []), {
+                valor: val,
+                obs: obs,
+                data: new Date().toLocaleDateString('pt-BR')
+            }];
+
+            try {
+                await updateDoc(doc(db, `/gestao-financeira/${userLogado.uid}/receitas`, id), {
+                    pagamentos: novosPgs
+                });
+                document.getElementById('modal-pg').classList.add('escondido');
+                document.getElementById('modal-val').value = '';
+                document.getElementById('modal-obs').value = '';
+            } catch (err) {
+                console.error("Erro ao confirmar pagamento:", err);
+            }
+        };
+
+        window.excluirRec = async (id) => {
+            if(confirm("Deseja apagar esta receita?")) {
+                try {
+                    await deleteDoc(doc(db, `/gestao-financeira/${userLogado.uid}/receitas`, id));
+                } catch (err) {
+                    console.error("Erro ao excluir receita:", err);
+                }
+            }
+        };
+
+        document.getElementById('prev-month').onclick = () => { dataVisao.setMonth(dataVisao.getMonth() - 1); renderDashboard(); };
+        document.getElementById('next-month').onclick = () => { dataVisao.setMonth(dataVisao.getMonth() + 1); renderDashboard(); };
+
+        const formatarMoeda = (num) => "R$ " + num.toFixed(2);
+
+    </script>
+</body>
+</html>
