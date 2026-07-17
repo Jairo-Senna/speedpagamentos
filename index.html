@@ -211,6 +211,15 @@
         .nav-mes button { width: auto; background: #e2e8f0; color: var(--texto-padrão); padding: 8px 16px; }
         .nav-mes button:hover { background: #cbd5e1; }
 
+        /* --- NOVA CLASSE CSS PARA O TEXTO DE REFERÊNCIA --- */
+        .texto-referencia {
+            font-size: 0.8rem;
+            color: var(--texto-suave);
+            font-weight: normal;
+            margin-left: 8px;
+            text-transform: none;
+        }
+
         @media (min-width: 992px) {
             .app-layout { grid-template-columns: 280px 1fr; }
             .sidebar { height: 100vh; position: sticky; top: 0; }
@@ -289,7 +298,11 @@
             <div id="dashboard-content" class="escondido">
                 <div class="nav-mes">
                     <button id="prev-month">Anterior</button>
-                    <h3 id="current-month-display"></h3>
+                    <!-- O Título agora é um flex container para alinhar os textos -->
+                    <div style="display: flex; align-items: baseline;">
+                        <h3 id="current-month-display"></h3>
+                        <span id="reference-month-display" class="texto-referencia"></span>
+                    </div>
                     <button id="next-month">Próximo</button>
                 </div>
 
@@ -311,7 +324,10 @@
                 </div>
 
                 <div class="card">
-                    <div class="section-title">Nova Entrada de Valor</div>
+                    <div class="section-title">
+                        Nova Entrada de Valor 
+                        <span id="form-reference-display" style="text-transform: none; font-weight: normal; font-size: 0.75rem;"></span>
+                    </div>
                     <form id="form-receita" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                         <input type="text" id="rec-title" placeholder="Título (ex: Salário Base)" style="grid-column: span 2;">
                         <input type="text" id="rec-cat" placeholder="Categoria">
@@ -475,7 +491,25 @@
         function renderDashboard() {
             const mes = dataVisao.getMonth();
             const ano = dataVisao.getFullYear();
+            
+            // Exibe o mês atual (ex: "Julho de 2026")
             document.getElementById('current-month-display').textContent = dataVisao.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+            // Calcula o mês de referência (mês anterior)
+            const dataReferencia = new Date(dataVisao);
+            dataReferencia.setMonth(dataVisao.getMonth() - 1);
+            const nomeMesRef = dataReferencia.toLocaleDateString('pt-BR', { month: 'long' });
+            const anoRef = dataReferencia.getFullYear();
+            
+            // Cria a string "referente ao mês de X"
+            let textoRef = `(Referente a ${nomeMesRef}`;
+            // Se o mês de referência for do ano passado (ex: Janeiro olha para Dezembro), mostra o ano.
+            if (anoRef !== ano) textoRef += ` de ${anoRef}`;
+            textoRef += `)`;
+
+            // Atualiza o DOM com o texto de referência
+            document.getElementById('reference-month-display').textContent = textoRef;
+            document.getElementById('form-reference-display').textContent = textoRef;
 
             const filtradas = cacheRecs.filter(r => {
                 const d = new Date(r.dataRef);
