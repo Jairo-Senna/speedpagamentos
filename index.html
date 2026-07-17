@@ -72,7 +72,7 @@
         }
 
         .sidebar header { margin-bottom: 32px; text-align: center; }
-        .sidebar header img { max-width: 140px; filter: brightness(0) invert(1); }
+        .sidebar header img { max-width: 140px; /* Removido o filtro CSS daqui */ }
 
         .main-content {
             padding: 32px;
@@ -268,9 +268,12 @@
     <div id="screen-app" class="app-layout escondido">
         <aside class="sidebar">
             <header>
-                <img src="imagens/speedlogo.png" alt="Logo" onclick="location.reload()" style="cursor:pointer">
+                <img src="imagens/speedlogo.png" alt="Logo" onclick="location.reload()" style="cursor:pointer" onerror="this.src='https://via.placeholder.com/150x50?text=SpeedNet'">
             </header>
             
+            <!-- NOVO: Botão de Relatório Global -->
+            <button id="btn-open-relat" style="background: #334155; margin-bottom: 32px; font-size: 0.9rem;">📋 Relatório do Mês</button>
+
             <div style="margin-bottom: 32px;">
                 <div class="section-title" style="color: #94a3b8;">Cadastro</div>
                 <form id="form-user">
@@ -357,6 +360,24 @@
             <div style="display:flex; gap:12px; margin-top: 8px;">
                 <button id="btn-confirm-pg" style="background:var(--sucesso)">Confirmar</button>
                 <button id="btn-close-modal" style="background:#64748b">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOVO: MODAL RELATÓRIO -->
+    <div id="modal-relat" class="modal-overlay escondido" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);">
+        <div class="card" style="width: 90%; max-width: 450px; margin: 0;">
+            <h3 style="margin-top:0; color:var(--primaria)">Gerar Relatório</h3>
+            
+            <label style="font-size: 0.85rem; font-weight: 600; color: var(--texto-suave);">Selecione o Mês de Referência:</label>
+            <input type="month" id="relat-mes" style="margin-bottom: 16px;">
+            <button id="btn-gerar-relat" style="margin-bottom: 16px;">Calcular Valores</button>
+            
+            <textarea id="relat-texto" readonly placeholder="O resumo do mês aparecerá aqui..." style="min-height: 180px; font-size: 0.85rem; resize: vertical; margin-bottom: 16px; font-family: inherit; background: #f8fafc;"></textarea>
+            
+            <div style="display:flex; gap:12px;">
+                <button id="btn-copiar-relat" style="background:var(--sucesso)">Copiar p/ WhatsApp</button>
+                <button id="btn-close-relat" style="background:#64748b">Fechar</button>
             </div>
         </div>
     </div>
@@ -475,7 +496,15 @@
             cacheUsers.forEach(u => {
                 const div = document.createElement('div');
                 div.className = `colab-item ${u.id === selectedColabId ? 'selecionado' : ''}`;
-                div.innerHTML = `<div style="font-weight:700;">${u.nome}</div><div style="font-size:0.75rem; opacity:0.8;">${u.setor || ''}</div>`;
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-weight:700;">${u.nome}</div>
+                            <div style="font-size:0.75rem; opacity:0.8;">${u.setor || ''}</div>
+                        </div>
+                        <div onclick="window.excluirColab(event, '${u.id}', '${u.nome}')" style="color: #fca5a5; font-size: 1.5rem; line-height: 1; padding: 0 5px;" title="Remover Colaborador">×</div>
+                    </div>
+                `;
                 div.onclick = () => {
                     selectedColabId = u.id;
                     dom.emptyState.classList.add('escondido');
@@ -557,7 +586,7 @@
                     ${histHtml}
                     <div style="display:flex; gap:10px; margin-top:16px;">
                         <button style="background:var(--sucesso); font-size:0.8rem;" onclick="window.abrirModal('${r.id}', '${r.titulo}')">Baixar Valor</button>
-                        <button style="background:#f1f5f9; color:#64748b; font-size:0.8rem;" onclick="window.excluirRec('${r.id}')">Remover</button>
+                        <button style="background:#fef2f2; color:#ef4444; font-size:0.8rem; border: 1px solid #fca5a5;" onclick="window.excluirRec('${r.id}')">Excluir</button>
                     </div>
                 `;
                 dom.listRecs.appendChild(div);
@@ -598,6 +627,114 @@
         window.excluirRec = async (id) => {
             if(confirm("Apagar este registro permanentemente?")) {
                 await deleteDoc(doc(db, `/gestao-financeira/${userLogado.uid}/receitas`, id));
+            }
+        };
+
+        window.excluirColab = async (event, id, nome) => {
+            event.stopPropagation(); // Evita que o clique selecione o colaborador por acidente
+            if(confirm(`Tem certeza que deseja remover o colaborador "${nome}" da lista?\n\nOs registros financeiros anteriores dele serão mantidos no banco de dados para segurança e auditoria, mas ele deixará de aparecer no menu.`)) {
+                await deleteDoc(doc(db, `/gestao-financeira/${userLogado.uid}/colaboradores`, id));
+                if(selectedColabId === id) {
+                    selectedColabId = null; // Se ele estava selecionado, limpa a tela central
+                    dom.emptyState.classList.remove('escondido');
+                    dom.dashContent.classList.add('escondido');
+                }
+            }
+        };
+
+        // --- LÓGICA DO RELATÓRIO MENSAL ---
+        document.getElementById('btn-open-relat').onclick = () => {
+            // Preenche o input de mês com o mês atual por padrão
+            const hoje = new Date();
+            const mesFormatado = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+            document.getElementById('relat-mes').value = mesFormatado;
+            document.getElementById('relat-texto').value = '';
+            document.getElementById('modal-relat').classList.remove('escondido');
+        };
+
+        document.getElementById('btn-close-relat').onclick = () => {
+            document.getElementById('modal-relat').classList.add('escondido');
+        };
+
+        document.getElementById('btn-gerar-relat').onclick = () => {
+            const mesInput = document.getElementById('relat-mes').value;
+            if (!mesInput) return alert("Selecione um mês válido.");
+            
+            const [anoStr, mesStr] = mesInput.split('-');
+            const anoNum = parseInt(anoStr);
+            const mesIndex = parseInt(mesStr) - 1;
+
+            // Formatar nome do mês
+            const dataFiltro = new Date(anoNum, mesIndex, 10);
+            const nomeMes = dataFiltro.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase();
+
+            // Filtrar receitas de TODOS os colaboradores para este mês
+            const receitasDoMes = cacheRecs.filter(r => {
+                const d = new Date(r.dataRef);
+                return d.getMonth() === mesIndex && d.getFullYear() === anoNum;
+            });
+
+            let totalGeral = 0;
+            let totalPago = 0;
+            const porColab = {}; // Agrupador
+
+            // Calcular valores
+            receitasDoMes.forEach(r => {
+                const pg = (r.pagamentos || []).reduce((acc, p) => acc + p.valor, 0);
+                totalGeral += r.valorTotal;
+                totalPago += pg;
+                
+                if (!porColab[r.colabId]) {
+                    porColab[r.colabId] = { previsto: 0, pago: 0 };
+                }
+                porColab[r.colabId].previsto += r.valorTotal;
+                porColab[r.colabId].pago += pg;
+            });
+
+            const totalPendente = totalGeral - totalPago;
+            const formatBRL = (val) => val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // Montar o texto do WhatsApp
+            let texto = `📊 *FECHAMENTO - ${nomeMes}*\n\n`;
+            texto += `💰 *RESUMO GLOBAL*\n`;
+            texto += `• Total da Folha: R$ ${formatBRL(totalGeral)}\n`;
+            texto += `• Pago até agora: R$ ${formatBRL(totalPago)}\n`;
+            texto += `• Falta Pagar: R$ ${formatBRL(totalPendente)}\n\n`;
+            
+            texto += `👥 *SITUAÇÃO DA EQUIPE*\n`;
+
+            const colabsIds = Object.keys(porColab);
+            if (colabsIds.length === 0) {
+                texto += `Nenhuma receita cadastrada para este mês.\n`;
+            } else {
+                colabsIds.forEach(id => {
+                    const c = cacheUsers.find(u => u.id === id);
+                    const nome = c ? c.nome : "Colaborador Removido";
+                    const pendente = porColab[id].previsto - porColab[id].pago;
+                    
+                    if (pendente <= 0.01) {  // Margem de erro de arredondamento
+                        texto += `✅ *${nome}* - Pagamento finalizado\n`;
+                    } else {
+                        texto += `⏳ *${nome}* - Pagamento pendente (Falta R$ ${formatBRL(pendente)})\n`;
+                    }
+                });
+            }
+
+            document.getElementById('relat-texto').value = texto;
+        };
+
+        // Copiar para a área de transferência
+        document.getElementById('btn-copiar-relat').onclick = () => {
+            const textarea = document.getElementById('relat-texto');
+            if(!textarea.value) return alert("Gere o relatório primeiro!");
+            
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // Para funcionar bem no mobile
+            try {
+                document.execCommand('copy');
+                alert("✅ Relatório copiado! Agora é só colar no WhatsApp.");
+            } catch (err) {
+                alert("Erro ao copiar. Selecione o texto e copie manualmente.");
             }
         };
 
