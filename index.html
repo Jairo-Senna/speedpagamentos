@@ -647,9 +647,10 @@
             const anoSelecionado = parseInt(valorInput.split('-')[0]);
             const mesSelecionado = parseInt(valorInput.split('-')[1]) - 1; // 0-indexed
             
-            // Filtrar todas as receitas do mês, de TODOS os colaboradores
+            // Filtrar todas as receitas do mês
             const recsDoMes = cacheRecs.filter(r => {
-                const d = new Date(r.dataRef);
+                const d = new Date(r.dataRef || r.dataCriacao); // Compatível com dados antigos e novos
+                if (isNaN(d.getTime())) return false;
                 return d.getMonth() === mesSelecionado && d.getFullYear() === anoSelecionado;
             });
             
@@ -664,13 +665,24 @@
                 totalGeral += r.valorTotal;
                 recebidoGeral += somaPg;
                 
-                if(!dadosPorColab[r.colabId]) {
-                    // Tenta achar o nome, senão "Desconhecido" (caso tenha sido apagado da lista)
-                    const user = cacheUsers.find(u => u.id === r.colabId);
-                    dadosPorColab[r.colabId] = { nome: user ? user.nome : 'Colaborador Oculto', pendente: 0 };
+                // Identifica o ID (suporta versões antigas do sistema)
+                const idColab = r.colabId || r.utilizadorId || "sem-id";
+                
+                if(!dadosPorColab[idColab]) {
+                    const user = cacheUsers.find(u => u.id === idColab);
+                    
+                    // Se o utilizador foi apagado da lista, usamos o título da receita para dar uma pista
+                    let nomeDisplay = 'Colaborador Oculto';
+                    if (user) {
+                        nomeDisplay = user.nome;
+                    } else {
+                        nomeDisplay = `Oculto (Ref: ${r.titulo || 'Sem título'})`;
+                    }
+                    
+                    dadosPorColab[idColab] = { nome: nomeDisplay, pendente: 0 };
                 }
                 
-                dadosPorColab[r.colabId].pendente += (r.valorTotal - somaPg);
+                dadosPorColab[idColab].pendente += (r.valorTotal - somaPg);
             });
             
             const pendenteGeral = totalGeral - recebidoGeral;
