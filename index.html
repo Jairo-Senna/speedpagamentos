@@ -72,7 +72,6 @@
         }
 
         .sidebar header { margin-bottom: 32px; text-align: center; }
-        /* Logo na sidebar sem o filtro de inverter cores */
         .sidebar header img { max-width: 140px; }
 
         .main-content {
@@ -255,7 +254,6 @@
                 <img src="imagens/speedlogo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/150x50?text=SpeedNet'">
             </header>
             
-            <!-- Botão Gerar Relatório -->
             <button id="btn-abrir-relatorio" style="background-color: #f8fafc; color: #0f172a; margin-bottom: 24px; border: 1px solid #cbd5e1;">📋 Relatório do Mês</button>
 
             <div style="margin-bottom: 32px;">
@@ -270,10 +268,10 @@
             <div class="section-title" style="color: #94a3b8;">Colaboradores</div>
             
             <!-- Campo de Busca de Colaboradores -->
-            <input type="text" id="search-colab" placeholder="🔍 Buscar por nome ou setor..." oninput="renderUsers()" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid #475569; padding: 10px; font-size: 0.85rem; margin-bottom: 15px; border-radius: 8px;">
+            <input type="text" id="search-colab" placeholder="🔍 Buscar por nome ou setor..." oninput="renderUsers()" onkeyup="renderUsers()" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid #475569; padding: 10px; font-size: 0.85rem; margin-bottom: 15px; border-radius: 8px;">
 
             <div id="list-users" style="flex-grow: 1; overflow-y: auto;">
-                <!-- JS -->
+                <!-- JS injeta os utilizadores aqui -->
             </div>
 
             <button id="btn-logout" style="background:transparent; border: 1px solid #475569; margin-top:20px; color: #94a3b8;">Sair</button>
@@ -402,8 +400,6 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 userLogado = user;
-                
-                // Força limpeza visual ao entrar noutra conta
                 selectedColabId = null;
                 dom.emptyState.classList.remove('escondido');
                 dom.dashContent.classList.add('escondido');
@@ -484,9 +480,8 @@
             e.target.reset();
         };
         
-        // Excluir Colaborador (Exposto no Global para o HTML)
         window.excluirColab = async (id, nome) => {
-            if(confirm(`Tem certeza que deseja remover ${nome} da lista lateral? Os históricos financeiros não serão apagados do sistema.`)) {
+            if(confirm(`Tem certeza que deseja remover ${nome} da lista lateral? Os históricos financeiros não serão apagados.`)) {
                 await deleteDoc(doc(db, `/gestao-financeira/${userLogado.uid}/colaboradores`, id));
                 if(selectedColabId === id) {
                     selectedColabId = null;
@@ -496,26 +491,44 @@
             }
         };
 
-        function renderUsers() {
+        // Torna a função global para ser chamada pelo HTML "oninput" e "onkeyup"
+        window.renderUsers = () => {
             dom.listUsers.innerHTML = '';
             
-            // Pega no valor digitado na busca (converte para minúsculas para não haver erros de maiúsculas/minúsculas)
             const inputBusca = document.getElementById('search-colab');
-            const termoBusca = inputBusca ? inputBusca.value.toLowerCase() : '';
+            
+            // Função Mágica para limpar o texto: Tira acentos, cê-cedilhas e põe tudo minúsculo
+            const normalizarTexto = (texto) => {
+                if (!texto) return '';
+                return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+            };
 
-            // Filtra o cache de utilizadores
-            const usersFiltrados = cacheUsers.filter(u => {
-                const nomeMatch = (u.nome || '').toLowerCase().includes(termoBusca);
-                const setorMatch = (u.setor || '').toLowerCase().includes(termoBusca);
-                return nomeMatch || setorMatch;
+            const termoBusca = inputBusca ? normalizarTexto(inputBusca.value) : '';
+
+            // 1º Passo: Organizar a lista toda por Ordem Alfabética (A-Z)
+            let usersOrdenados = [...cacheUsers].sort((a, b) => {
+                const nomeA = a.nome || '';
+                const nomeB = b.nome || '';
+                return nomeA.localeCompare(nomeB, 'pt-BR');
             });
 
-            // Mostra mensagem se não encontrar ninguém
+            // 2º Passo: Filtrar a lista se o utilizador escreveu algo na busca
+            let usersFiltrados = usersOrdenados;
+            if (termoBusca !== '') {
+                usersFiltrados = usersOrdenados.filter(u => {
+                    const nomeMatch = normalizarTexto(u.nome).includes(termoBusca);
+                    const setorMatch = normalizarTexto(u.setor).includes(termoBusca);
+                    return nomeMatch || setorMatch;
+                });
+            }
+
+            // 3º Passo: Mostrar mensagem se não encontrou ninguém
             if(usersFiltrados.length === 0 && termoBusca !== '') {
-                 dom.listUsers.innerHTML = '<p style="font-size:0.8rem; color:#64748b; text-align:center; margin-top: 10px;">Nenhum colaborador encontrado.</p>';
+                 dom.listUsers.innerHTML = '<p style="font-size:0.85rem; color:#64748b; text-align:center; padding: 20px;">Nenhum colaborador encontrado com essa busca.</p>';
                  return;
             }
 
+            // 4º Passo: Desenhar no ecrã quem passou no filtro (e em ordem alfabética!)
             usersFiltrados.forEach(u => {
                 const div = document.createElement('div');
                 div.className = `colab-item ${u.id === selectedColabId ? 'selecionado' : ''}`;
@@ -533,12 +546,12 @@
                     dom.emptyState.classList.add('escondido');
                     dom.dashContent.classList.remove('escondido');
                     document.getElementById('view-title').textContent = u.nome;
-                    renderUsers();
+                    window.renderUsers(); // Redesenha para pintar de laranja o selecionado
                     renderDashboard();
                 };
                 dom.listUsers.appendChild(div);
             });
-        }
+        };
         
         function getMesRefText() {
             let dataRef = new Date(dataVisao);
@@ -550,28 +563,24 @@
             const mes = dataVisao.getMonth();
             const ano = dataVisao.getFullYear();
             
-            // Títulos dinâmicos com o mês de referência
             document.getElementById('current-month-display').innerHTML = `${dataVisao.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })} <span class="mes-referencia">${getMesRefText()}</span>`;
             document.getElementById('titulo-nova-entrada').innerHTML = `Nova Entrada de Valor <span class="mes-referencia" style="text-transform:none; font-weight:normal">${getMesRefText()}</span>`;
 
             const filtradas = cacheRecs.filter(r => {
-                const d = new Date(r.dataRef);
-                return r.colabId === selectedColabId && d.getMonth() === mes && d.getFullYear() === ano;
+                const d = new Date(r.dataRef || r.dataCriacao); // Compatível com novos e antigos
+                return (r.colabId === selectedColabId || r.utilizadorId === selectedColabId) && d.getMonth() === mes && d.getFullYear() === ano;
             });
 
             let total = 0, recebido = 0;
             dom.listRecs.innerHTML = filtradas.length ? '' : '<p style="text-align:center;color:var(--texto-suave);padding:40px;">Nenhuma receita neste mês.</p>';
 
-            filtradas.sort((a,b) => b.dataRef.localeCompare(a.dataRef)).forEach(r => {
-                const somaPg = (r.pagamentos || []).reduce((acc, p) => acc + p.valor, 0);
-                total += r.valorTotal;
-                recebido += somaPg;
-
-                const div = document.createElement('div');
-                div.className = 'card receita-item';
-                
+            filtradas.sort((a,b) => (b.dataRef || b.dataCriacao || '').localeCompare((a.dataRef || a.dataCriacao || ''))).forEach(r => {
+                // Compatibilidade de pagamentos do sistema antigo e novo
+                let somaPg = 0;
                 let histHtml = '';
+                
                 if(r.pagamentos && r.pagamentos.length > 0) {
+                    somaPg = r.pagamentos.reduce((acc, p) => acc + p.valor, 0);
                     histHtml = `<div class="historico-pagamentos">
                         <div style="font-size:0.75rem; font-weight:700; color:var(--primaria); margin-bottom:8px;">HISTÓRICO DE PAGAMENTOS:</div>
                         ${r.pagamentos.map(p => `
@@ -584,8 +593,28 @@
                             </div>
                         `).join('')}
                     </div>`;
+                } else if (r.historicoPagamentos && r.historicoPagamentos.length > 0) {
+                    somaPg = r.historicoPagamentos.reduce((acc, p) => acc + p.valor, 0);
+                    histHtml = `<div class="historico-pagamentos">
+                        <div style="font-size:0.75rem; font-weight:700; color:var(--primaria); margin-bottom:8px;">HISTÓRICO DE PAGAMENTOS:</div>
+                        ${r.historicoPagamentos.map(p => `
+                            <div class="pagamento-linha">
+                                <div class="pg-info">
+                                    <span>📅 ${p.data}</span>
+                                    <span style="color:var(--sucesso)">+ R$ ${p.valor.toFixed(2)}</span>
+                                </div>
+                                <div class="pg-obs">${p.observacao || 'Sem nota adicional.'}</div>
+                            </div>
+                        `).join('')}
+                    </div>`;
                 }
 
+                total += r.valorTotal;
+                recebido += somaPg;
+
+                const div = document.createElement('div');
+                div.className = 'card receita-item';
+                
                 div.innerHTML = `
                     <div class="entrada-categoria">${r.categoria}</div>
                     <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
@@ -626,13 +655,23 @@
             if(isNaN(val) || val <= 0) return alert("Valor inválido.");
 
             const rec = cacheRecs.find(r => r.id === id);
-            const novosPgs = [...(rec.pagamentos || []), {
+            
+            // Compatibilidade novo/antigo
+            let arrayPagamentos = rec.pagamentos || [];
+            if(rec.historicoPagamentos) arrayPagamentos = rec.historicoPagamentos;
+
+            const novosPgs = [...arrayPagamentos, {
                 valor: val,
                 obs: obs,
+                observacao: obs, // Salva nas duas chaves para manter compatibilidade
                 data: new Date().toLocaleDateString('pt-BR')
             }];
 
-            await updateDoc(doc(db, `/gestao-financeira/${userLogado.uid}/receitas`, id), { pagamentos: novosPgs });
+            await updateDoc(doc(db, `/gestao-financeira/${userLogado.uid}/receitas`, id), { 
+                pagamentos: novosPgs,
+                historicoPagamentos: novosPgs 
+            });
+            
             document.getElementById('modal-pg').classList.add('escondido');
             document.getElementById('modal-val').value = '';
             document.getElementById('modal-obs').value = '';
@@ -648,68 +687,59 @@
         const formatMoney = (val) => `R$ ${val.toFixed(2).replace('.', ',')}`;
         
         document.getElementById('btn-abrir-relatorio').onclick = () => {
-            // Preenche o input do mês com o mês atual da visão
             let y = dataVisao.getFullYear();
             let m = (dataVisao.getMonth() + 1).toString().padStart(2, '0');
             document.getElementById('input-mes-relatorio').value = `${y}-${m}`;
             
-            document.getElementById('texto-relatorio').value = "Selecione um mês para gerar o relatório...";
+            document.getElementById('texto-relatorio').value = "A gerar relatório...";
             document.getElementById('modal-relatorio').classList.remove('escondido');
-            gerarRelatorio(); // gera logo de primeira
+            window.gerarRelatorio();
         };
         
         document.getElementById('btn-fechar-relatorio').onclick = () => document.getElementById('modal-relatorio').classList.add('escondido');
+        document.getElementById('input-mes-relatorio').onchange = () => window.gerarRelatorio();
         
-        document.getElementById('input-mes-relatorio').onchange = gerarRelatorio;
-        
-        function gerarRelatorio() {
+        window.gerarRelatorio = () => {
             const valorInput = document.getElementById('input-mes-relatorio').value;
             if(!valorInput) return;
             
             const anoSelecionado = parseInt(valorInput.split('-')[0]);
-            const mesSelecionado = parseInt(valorInput.split('-')[1]) - 1; // 0-indexed
+            const mesSelecionado = parseInt(valorInput.split('-')[1]) - 1; 
             
-            // Filtrar todas as receitas do mês
             const recsDoMes = cacheRecs.filter(r => {
-                const d = new Date(r.dataRef || r.dataCriacao); // Compatível com dados antigos e novos
+                const d = new Date(r.dataRef || r.dataCriacao); 
                 if (isNaN(d.getTime())) return false;
                 return d.getMonth() === mesSelecionado && d.getFullYear() === anoSelecionado;
             });
             
-            let totalGeral = 0;
-            let recebidoGeral = 0;
-            
-            // Agrupar por colaborador
+            let totalGeral = 0, recebidoGeral = 0;
             const dadosPorColab = {};
             
             recsDoMes.forEach(r => {
-                const somaPg = (r.pagamentos || []).reduce((acc, p) => acc + p.valor, 0);
+                // Cálculo de recebido aceitando os 2 layouts do BD
+                let arrayPgs = r.pagamentos || r.historicoPagamentos || [];
+                const somaPg = arrayPgs.reduce((acc, p) => acc + p.valor, 0);
+                
                 totalGeral += r.valorTotal;
                 recebidoGeral += somaPg;
                 
-                // Identifica o ID (suporta versões antigas do sistema)
                 const idColab = r.colabId || r.utilizadorId || "sem-id";
                 
                 if(!dadosPorColab[idColab]) {
                     const user = cacheUsers.find(u => u.id === idColab);
-                    
-                    // Se o utilizador foi apagado da lista, usamos o título da receita para dar uma pista
                     let nomeDisplay = 'Colaborador Oculto';
                     if (user) {
-                        nomeDisplay = user.nome;
+                        nomeDisplay = user.nome.toUpperCase();
                     } else {
                         nomeDisplay = `Oculto (Ref: ${r.titulo || 'Sem título'})`;
                     }
-                    
                     dadosPorColab[idColab] = { nome: nomeDisplay, pendente: 0 };
                 }
-                
                 dadosPorColab[idColab].pendente += (r.valorTotal - somaPg);
             });
             
             const pendenteGeral = totalGeral - recebidoGeral;
             
-            // Nome do mês
             const dtRef = new Date(anoSelecionado, mesSelecionado, 10);
             const nomeMesAno = dtRef.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase();
             
@@ -718,7 +748,6 @@
             texto += `Total Previsto: ${formatMoney(totalGeral)}\n`;
             texto += `Total Recebido: ${formatMoney(recebidoGeral)}\n`;
             texto += `Total Pendente: ${formatMoney(pendenteGeral)}\n\n`;
-            
             texto += `👥 *Detalhes por Colaborador:*\n`;
             
             if(Object.keys(dadosPorColab).length === 0) {
@@ -726,16 +755,15 @@
             } else {
                 for (const colabId in dadosPorColab) {
                     const dados = dadosPorColab[colabId];
-                    if(dados.pendente <= 0.01) { // margem de erro float
+                    if(dados.pendente <= 0.01) { 
                         texto += `- *${dados.nome}*: Pagamento finalizado ✅\n`;
                     } else {
                         texto += `- *${dados.nome}*: Pagamento pendente (${formatMoney(dados.pendente)}) ⏳\n`;
                     }
                 }
             }
-            
             document.getElementById('texto-relatorio').value = texto;
-        }
+        };
         
         document.getElementById('btn-copiar-relatorio').onclick = () => {
             const textoBox = document.getElementById('texto-relatorio');
